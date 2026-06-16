@@ -220,6 +220,7 @@
     const wb = global.XLSX.utils.book_new();
     global.XLSX.utils.book_append_sheet(wb, ws, "Datos");
     global.XLSX.writeFile(wb, (nombre || "export") + "_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Exportado: " + (nombre || "export") + "_" + U.todayISO() + ".xlsx", "ok");
   };
 
   // Descargar todos los registros (Paso 11) — un libro con varias hojas.
@@ -277,6 +278,7 @@
     global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(cAoa, [2, 3]), "Correctivo");
 
     global.XLSX.writeFile(wb, "Registros_MP2026_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Registros descargados: Registros_MP2026_" + U.todayISO() + ".xlsx", "ok");
   };
 
 })(window);

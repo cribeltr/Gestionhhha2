@@ -1,10 +1,6 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="es"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Gestión MP 2026 · Mantenciones Preventivas de Equipos</title>
-<meta name="description" content="Sistema de Gestión de Mantenciones Preventivas y Correctivas de Equipos — MP 2026. Archivo único autónomo." />
 <style>
 /* =========================================================================
  * MP 2026 · styles.css — Identidad visual clínica/hospitalaria.
@@ -299,9 +295,7 @@ textarea.ctrl { resize: vertical; }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-</head>
-<body>
-<div id="app"></div>
+</head><body><div id="app"></div>
 <script>
 /* ===== assets/js/core/utils.js ===== */
 /* =========================================================================
@@ -1220,7 +1214,14 @@ textarea.ctrl { resize: vertical; }
       (config.toolbarExtra || []).forEach((n) => toolbar.appendChild(n));
       const search = el("input", { class: "dt-search", type: "search",
         placeholder: "🔍 Búsqueda global…", value: state.search });
-      search.addEventListener("input", () => { state.search = search.value; state.page = 1; render(); });
+      // Re-renderiza y restaura el foco/caret para no perder la escritura
+      // continua (la tabla se reconstruye en cada tecla).
+      search.addEventListener("input", () => {
+        state.search = search.value; state.page = 1;
+        render();
+        const fresh = root.querySelector(".dt-search");
+        if (fresh) { fresh.focus(); const n = fresh.value.length; try { fresh.setSelectionRange(n, n); } catch (e) {} }
+      });
       toolbar.appendChild(search);
 
       const count = el("span", { class: "dt-count" },
@@ -1668,6 +1669,7 @@ textarea.ctrl { resize: vertical; }
     const wb = global.XLSX.utils.book_new();
     global.XLSX.utils.book_append_sheet(wb, ws, "Datos");
     global.XLSX.writeFile(wb, (nombre || "export") + "_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Exportado: " + (nombre || "export") + "_" + U.todayISO() + ".xlsx", "ok");
   };
 
   // Descargar todos los registros (Paso 11) — un libro con varias hojas.
@@ -1725,6 +1727,7 @@ textarea.ctrl { resize: vertical; }
     global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(cAoa, [2, 3]), "Correctivo");
 
     global.XLSX.writeFile(wb, "Registros_MP2026_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Registros descargados: Registros_MP2026_" + U.todayISO() + ".xlsx", "ok");
   };
 
 })(window);
@@ -3489,6 +3492,4 @@ textarea.ctrl { resize: vertical; }
 
 })(window);
 
-</script>
-</body>
-</html>
+</script></body></html>

@@ -165,7 +165,14 @@
       (config.toolbarExtra || []).forEach((n) => toolbar.appendChild(n));
       const search = el("input", { class: "dt-search", type: "search",
         placeholder: "🔍 Búsqueda global…", value: state.search });
-      search.addEventListener("input", () => { state.search = search.value; state.page = 1; render(); });
+      // Re-renderiza y restaura el foco/caret para no perder la escritura
+      // continua (la tabla se reconstruye en cada tecla).
+      search.addEventListener("input", () => {
+        state.search = search.value; state.page = 1;
+        render();
+        const fresh = root.querySelector(".dt-search");
+        if (fresh) { fresh.focus(); const n = fresh.value.length; try { fresh.setSelectionRange(n, n); } catch (e) {} }
+      });
       toolbar.appendChild(search);
 
       const count = el("span", { class: "dt-count" },
