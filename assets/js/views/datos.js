@@ -71,7 +71,7 @@
 
     /* --- Backup (Paso 11) --- */
     grid.appendChild(card("💾", "Respaldo (backup)",
-      "Genera un respaldo completo de los datos de la aplicación en formato JSON, que permite restaurar la información en caso de pérdida o reinstalación.",
+      "Genera un respaldo completo de los datos de la aplicación en formato JSON. Al restaurar, el respaldo <b>reemplaza por completo</b> los datos actuales (no es necesario borrar antes).",
       [
         UI.btn("Generar respaldo", "secondary", () => {
           const blob = new Blob([Store.exportBackup()], { type: "application/json" });
@@ -93,7 +93,7 @@
             };
             r.readAsText(f); inp.value = "";
           });
-          const btn = UI.btn("Restaurar respaldo", "ghost", () => inp.click());
+          const btn = UI.btn("Restaurar (reemplaza todo)", "ghost", () => inp.click());
           return el("div", {}, [btn, inp]);
         })(),
       ]));
@@ -114,7 +114,7 @@
       return el("div", { class: "data-card" }, [
         el("div", { class: "data-card-ico" }, ico),
         el("h3", {}, titulo),
-        el("p", { class: "muted" }, desc),
+        el("p", { class: "muted", html: desc }),
         el("div", { class: "data-card-actions" }, acciones),
       ]);
     }

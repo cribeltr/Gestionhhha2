@@ -3,6 +3,11 @@
  * Formularios de captura: Mantenimiento Preventivo (Paso 8),
  * Pendientes (Paso 9) y Mantenimiento Correctivo (Paso 10),
  * más los formularios de "Registrar avance" del expediente.
+ *
+ * Autoguardado de borrador (mejora continua): mientras se completa un
+ * formulario, los valores se persisten en localStorage. Si la pestaña se
+ * cierra o se navega sin guardar, al reabrir el mismo formulario se ofrece
+ * recuperar lo escrito. El borrador se descarta al Guardar o Cancelar.
  * ========================================================================= */
 (function (global) {
   "use strict";
@@ -52,6 +57,35 @@
   }
   F._field = field; F._input = input; F._select = select; F._segmented = segmented; F._textarea = textarea;
 
+  /* ----- Autoguardado de borradores ---------------------------------- */
+  F._draftKey = function (kind, ctx) { return "mp2026_draft_" + kind + "_" + (ctx || ""); };
+  F._loadDraft = function (key) {
+    try { const r = JSON.parse(localStorage.getItem(key) || "null"); return r ? r.data : null; }
+    catch (e) { return null; }
+  };
+  F._saveDraft = function (key, data) {
+    try { localStorage.setItem(key, JSON.stringify({ _ts: Date.now(), data })); } catch (e) {}
+  };
+  F._clearDraft = function (key) { try { localStorage.removeItem(key); } catch (e) {} };
+
+  // Conecta el autoguardado a un cuerpo de modal; devuelve un control con
+  // .save() manual y un flag para detenerlo al descartar.
+  function wireAutosave(body, key, collect) {
+    const ctl = { stopped: false };
+    const save = () => { if (!ctl.stopped) F._saveDraft(key, collect()); };
+    body.addEventListener("input", save, true);
+    body.addEventListener("change", save, true);
+    ctl.save = save;
+    return ctl;
+  }
+
+  function draftNote(onDiscard) {
+    return el("div", { class: "draft-note" }, [
+      el("span", {}, "📝 Se recuperó un borrador sin guardar de una sesión anterior."),
+      UI.btn("Descartar borrador", "ghost sm", onDiscard),
+    ]);
+  }
+
   /* =====================================================================
    * Paso 8 — Mantenimiento Preventivo
    * ===================================================================== */
@@ -59,22 +93,28 @@
     const eq = Store.equipoByKey(equipoKey);
     if (!eq) return;
 
-    const fFecha = input({ type: "date", value: U.todayISO() });
-    const fProg = select(C.PROGRAMA_VALIDOS.map((p) => ({ value: p, label: p + " — " + C.PROGRAMA[p] })));
-    const fEjec = select(C.EJECUTORES);
-    const fRes = select(C.RESULTADO_VALIDOS.map((r) => ({ value: r, label: r + " — " + C.RESULTADO[r] })));
-    const fObs = textarea({ placeholder: "Observaciones (opcional)" });
-    let estadoEquipo = "Operativo";
-    const fEstado = segmented(["Operativo", "No Operativo"], "Operativo", (v) => estadoEquipo = v);
-    let gestion = false;
-    const fGestion = el("label", { class: "switch" }, [
-      (() => { const cb = el("input", { type: "checkbox" }); cb.addEventListener("change", () => gestion = cb.checked); return cb; })(),
-      el("span", {}, "Generar pendiente asociado"),
-    ]);
-    let tipoReg = "Oficial";
-    const fTipo = segmented(["Oficial", "Borrador"], "Oficial", (v) => tipoReg = v);
+    const key = F._draftKey("preventivo", equipoKey);
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
 
-    // Sugerencia automática según planilla (Paso 4).
+    const fFecha = input({ type: "date", value: g("fecha", U.todayISO()) });
+    const fProg = select(C.PROGRAMA_VALIDOS.map((p) => ({ value: p, label: p + " — " + C.PROGRAMA[p] })), g("programacion", ""));
+    const fEjec = select(C.EJECUTORES, g("ejecutor", ""));
+    const fRes = select(C.RESULTADO_VALIDOS.map((r) => ({ value: r, label: r + " — " + C.RESULTADO[r] })), g("resultado", ""));
+    const fObs = textarea({ placeholder: "Observaciones (opcional)" }); fObs.value = g("observaciones", "");
+    let estadoEquipo = g("estadoEquipo", "Operativo");
+    const fEstado = segmented(["Operativo", "No Operativo"], estadoEquipo, (v) => { estadoEquipo = v; auto && auto.save(); });
+    const gestionCb = el("input", { type: "checkbox" }); gestionCb.checked = !!g("gestion", false);
+    const fGestion = el("label", { class: "switch" }, [gestionCb, el("span", {}, "Generar pendiente asociado")]);
+    let tipoReg = g("tipoReg", "Oficial");
+    const fTipo = segmented(["Oficial", "Borrador"], tipoReg, (v) => { tipoReg = v; auto && auto.save(); });
+
+    const collect = () => ({
+      fecha: fFecha.value, programacion: fProg.value, ejecutor: fEjec.value,
+      resultado: fRes.value, observaciones: fObs.value, estadoEquipo: fEstado.getValue(),
+      gestion: gestionCb.checked, tipoReg: fTipo.getValue(),
+    });
+
     const hintProg = el("div", { class: "field-hint" });
     function actualizarSugerencia() {
       const mesKey = U.mesKeyFromISO(fFecha.value);
@@ -84,7 +124,7 @@
       if (progPlanilla) {
         hintProg.innerHTML = "📌 La planilla indica <b>" + progPlanilla + "</b> para " +
           U.mesNombre(mesKey) + ". " + (mesesProg.length ? "Meses programados: " + mesesProg.join(", ") + "." : "");
-        if (!fProg.value) fProg.value = progPlanilla; // sugerencia; la elección manual prevalece
+        if (!fProg.value) fProg.value = progPlanilla;
       } else {
         hintProg.innerHTML = "Sin programación en la planilla para " + U.mesNombre(mesKey) + "." +
           (mesesProg.length ? " Meses programados del equipo: " + mesesProg.join(", ") + "." : "");
@@ -93,7 +133,9 @@
     fFecha.addEventListener("change", actualizarSugerencia);
     setTimeout(actualizarSugerencia, 0);
 
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.preventivo(equipoKey, onSaved); }) : null;
     const form = el("div", { class: "form-grid" }, [
+      note,
       field("Fecha de la mantención", fFecha),
       field("Programación", fProg, "Sugerida según la planilla; puede cambiarla."),
       hintProg,
@@ -110,21 +152,23 @@
       title: "Mantenimiento Preventivo · " + eq.equipo + " (" + (eq.serie || eq.nInventario) + ")",
       size: "md", body: form,
       footer: [
-        UI.btn("Cancelar", "ghost", () => { MP.grabacion.notarFormulario("preventivo", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("preventivo", "cancelado", Date.now() - t0); m.close(); }),
         UI.btn("Guardar", "primary", () => {
           if (!fFecha.value) { UI.toast("Ingrese la fecha.", "warn"); return; }
           if (!fRes.value) { UI.toast("Seleccione un resultado.", "warn"); return; }
           Store.guardarMantencion({
             equipoKey, fecha: fFecha.value, programacion: fProg.value, ejecutor: fEjec.value,
             resultado: fRes.value, observaciones: fObs.value, estadoEquipo,
-            gestionPendiente: gestion, tipoRegistro: tipoReg,
+            gestionPendiente: gestionCb.checked, tipoRegistro: tipoReg,
           });
+          auto.stopped = true; F._clearDraft(key);
           MP.grabacion.notarFormulario("preventivo", "guardado", Date.now() - t0);
           UI.toast("Mantención preventiva guardada (" + tipoReg + ").", "ok");
           m.close(); onSaved && onSaved();
         }),
       ],
     });
+    const auto = wireAutosave(m.body, key, collect);
   };
 
   /* =====================================================================
@@ -134,46 +178,52 @@
     const eq = equipoKey ? Store.equipoByKey(equipoKey) : null;
     const p = existente || {};
 
-    const fFecha = input({ type: "date", value: p.fechaCompromiso || U.todayISO() });
-    const quick = el("div", { class: "quick-dates" }, [
-      UI.btn("Hoy", "chip", () => fFecha.value = U.todayISO()),
-      UI.btn("3 días", "chip", () => fFecha.value = U.addDays(U.todayISO(), 3)),
-      UI.btn("1 semana", "chip", () => fFecha.value = U.addDays(U.todayISO(), 7)),
-    ]);
-    const fTipo = select(C.TIPOS_PENDIENTE, p.tipo);
-    const fDesc = textarea({ placeholder: "Descripción (opcional)" }); fDesc.value = p.descripcion || "";
-    const fAdmin = select(C.EJECUTORES, p.responsableAdmin || "Cristián Beltrán Oviedo");
-    const fEjec = select(C.EJECUTORES, p.responsableEjecutivo);
+    const key = F._draftKey("pendiente", (equipoKey || "global") + "_" + (existente ? existente.id : "new"));
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
 
-    // Tareas
-    const tareas = (p.tareas || []).slice();
+    const fFecha = input({ type: "date", value: g("fechaCompromiso", p.fechaCompromiso || U.todayISO()) });
+    const quick = el("div", { class: "quick-dates" }, [
+      UI.btn("Hoy", "chip", () => { fFecha.value = U.todayISO(); auto && auto.save(); }),
+      UI.btn("3 días", "chip", () => { fFecha.value = U.addDays(U.todayISO(), 3); auto && auto.save(); }),
+      UI.btn("1 semana", "chip", () => { fFecha.value = U.addDays(U.todayISO(), 7); auto && auto.save(); }),
+    ]);
+    const fTipo = select(C.TIPOS_PENDIENTE, g("tipo", p.tipo));
+    const fDesc = textarea({ placeholder: "Descripción (opcional)" }); fDesc.value = g("descripcion", p.descripcion || "");
+    const fAdmin = select(C.EJECUTORES, g("responsableAdmin", p.responsableAdmin || "Cristián Beltrán Oviedo"));
+    const fEjec = select(C.EJECUTORES, g("responsableEjecutivo", p.responsableEjecutivo));
+
+    const tareas = (g("tareas", null) || (p.tareas || [])).map((t) => ({ texto: t.texto, hecha: !!t.hecha }));
     const tareasList = el("div", { class: "tareas-list" });
     function renderTareas() {
       tareasList.innerHTML = "";
       tareas.forEach((t, i) => {
         const cb = el("input", { type: "checkbox" }); cb.checked = !!t.hecha;
-        cb.addEventListener("change", () => t.hecha = cb.checked);
+        cb.addEventListener("change", () => { t.hecha = cb.checked; auto && auto.save(); });
         tareasList.appendChild(el("div", { class: "tarea-row" }, [
           cb, el("span", { class: "tarea-txt" + (t.hecha ? " done" : "") }, t.texto),
-          UI.btn("✕", "icon-btn", () => { tareas.splice(i, 1); renderTareas(); }),
+          UI.btn("✕", "icon-btn", () => { tareas.splice(i, 1); renderTareas(); auto && auto.save(); }),
         ]));
       });
     }
     renderTareas();
     const nuevaTarea = input({ placeholder: "Nueva tarea…" });
-    nuevaTarea.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && nuevaTarea.value.trim()) {
-        tareas.push({ texto: nuevaTarea.value.trim(), hecha: false }); nuevaTarea.value = ""; renderTareas();
-      }
-    });
-    const addTarea = el("div", { class: "add-tarea" }, [nuevaTarea,
-      UI.btn("+ Agregar", "ghost sm", () => {
-        if (nuevaTarea.value.trim()) { tareas.push({ texto: nuevaTarea.value.trim(), hecha: false }); nuevaTarea.value = ""; renderTareas(); }
-      })]);
+    const addTareaFn = () => { if (nuevaTarea.value.trim()) { tareas.push({ texto: nuevaTarea.value.trim(), hecha: false }); nuevaTarea.value = ""; renderTareas(); auto && auto.save(); } };
+    nuevaTarea.addEventListener("keydown", (e) => { if (e.key === "Enter") addTareaFn(); });
+    const addTarea = el("div", { class: "add-tarea" }, [nuevaTarea, UI.btn("+ Agregar", "ghost sm", addTareaFn)]);
 
     const fGestion = textarea({ placeholder: "Registrar una gestión / actualización (opcional)" });
+    fGestion.value = g("gestionNueva", "");
 
+    const collect = () => ({
+      fechaCompromiso: fFecha.value, tipo: fTipo.value, descripcion: fDesc.value,
+      responsableAdmin: fAdmin.value, responsableEjecutivo: fEjec.value,
+      tareas: tareas.map((t) => ({ texto: t.texto, hecha: t.hecha })), gestionNueva: fGestion.value,
+    });
+
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.pendiente(equipoKey, onSaved, existente); }) : null;
     const form = el("div", { class: "form-grid" }, [
+      note,
       field("Fecha de compromiso", el("div", {}, [fFecha, quick])),
       field("Tipo de pendiente", fTipo),
       field("Descripción", fDesc),
@@ -188,7 +238,7 @@
       title: (existente ? "Editar pendiente" : "Nuevo pendiente") + (eq ? " · " + eq.equipo : ""),
       size: "md", body: form,
       footer: [
-        UI.btn("Cancelar", "ghost", () => { MP.grabacion.notarFormulario("pendiente", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("pendiente", "cancelado", Date.now() - t0); m.close(); }),
         UI.btn("Guardar", "primary", () => {
           const data = {
             id: p.id, equipoKey: equipoKey || p.equipoKey,
@@ -203,12 +253,14 @@
             const target = existente ? p.id : Store.db.pendientes[Store.db.pendientes.length - 1].id;
             Store.agregarGestion(target, fGestion.value.trim());
           }
+          auto.stopped = true; F._clearDraft(key);
           MP.grabacion.notarFormulario("pendiente", "guardado", Date.now() - t0);
           UI.toast("Pendiente guardado.", "ok");
           m.close(); onSaved && onSaved();
         }),
       ],
     });
+    const auto = wireAutosave(m.body, key, collect);
   };
 
   /* =====================================================================
@@ -218,40 +270,40 @@
     const eq = Store.equipoByKey(equipoKey);
     if (!eq) return;
 
-    const fTipoEvento = select(C.TIPOS_EVENTO, "Orden de Trabajo");
-    const fReq = textarea({ placeholder: "Requerimiento (opcional)" });
-    const fFecha = input({ type: "date", value: U.todayISO() });
-    const fFolio = input({ placeholder: "Folio de Solicitud SIGEM" });
-    const fTec = select(C.EJECUTORES);
-    let estadoEq = "No Operativo";
-    const fEstado = segmented(C.ESTADOS_EQUIPO_CORR, "No Operativo", (v) => estadoEq = v);
-    const fCompra = select(C.TIPOS_COMPRA);
+    const key = F._draftKey("correctivo", equipoKey);
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
 
-    // Sub-formulario Trato Directo (informe técnico)
+    const fTipoEvento = select(C.TIPOS_EVENTO, g("tipoEvento", "Orden de Trabajo"));
+    const fReq = textarea({ placeholder: "Requerimiento (opcional)" }); fReq.value = g("requerimiento", "");
+    const fFecha = input({ type: "date", value: g("fechaDocumento", U.todayISO()) });
+    const fFolio = input({ placeholder: "Folio de Solicitud SIGEM", value: g("folio", "") });
+    const fTec = select(C.EJECUTORES, g("tecnico", ""));
+    let estadoEq = g("estadoEquipo", "No Operativo");
+    const fEstado = segmented(C.ESTADOS_EQUIPO_CORR, estadoEq, (v) => { estadoEq = v; actualizarCrit(); auto && auto.save(); });
+    const fCompra = select(C.TIPOS_COMPRA, g("tipoCompra", ""));
+
     const tdBox = el("div", { class: "subform hidden" });
-    const tdNum = input({ placeholder: "N° informe técnico" });
-    const tdFecha = input({ type: "date" });
-    const tdResp = select(C.EJECUTORES);
-    const tdEmpresa = select(C.EMPRESAS);
+    const tdNum = input({ placeholder: "N° informe técnico", value: g("tdNum", "") });
+    const tdFecha = input({ type: "date", value: g("tdFecha", "") });
+    const tdResp = select(C.EJECUTORES, g("tdResp", ""));
+    const tdEmpresa = select(C.EMPRESAS, g("tdEmpresa", ""));
     tdBox.appendChild(el("div", { class: "subform-title" }, "Informe técnico (Trato Directo)"));
     tdBox.appendChild(el("div", { class: "form-grid" }, [
       field("N° informe técnico", tdNum), field("Fecha informe", tdFecha),
       field("Responsable informe", tdResp), field("Empresa", tdEmpresa),
     ]));
-    fCompra.addEventListener("change", () => tdBox.classList.toggle("hidden", fCompra.value !== "Trato Directo"));
+    function toggleTD() { tdBox.classList.toggle("hidden", fCompra.value !== "Trato Directo"); }
+    fCompra.addEventListener("change", toggleTD);
 
-    // Orden de compra
-    const ocNum = input({ placeholder: "N° orden de compra" });
-    const ocFecha = input({ type: "date" });
-    const ocDesc = textarea({ placeholder: "Descripción de la OC (opcional)" });
+    const ocNum = input({ placeholder: "N° orden de compra", value: g("ocNum", "") });
+    const ocFecha = input({ type: "date", value: g("ocFecha", "") });
+    const ocDesc = textarea({ placeholder: "Descripción de la OC (opcional)" }); ocDesc.value = g("ocDesc", "");
 
-    let gestion = false;
-    const fGestion = el("label", { class: "switch" }, [
-      (() => { const cb = el("input", { type: "checkbox" }); cb.addEventListener("change", () => gestion = cb.checked); return cb; })(),
-      el("span", {}, "Generar pendiente asociado"),
-    ]);
-    let tipoReg = "Oficial";
-    const fTipoReg = segmented(["Oficial", "Borrador"], "Oficial", (v) => tipoReg = v);
+    const gestionCb = el("input", { type: "checkbox" }); gestionCb.checked = !!g("gestion", false);
+    const fGestion = el("label", { class: "switch" }, [gestionCb, el("span", {}, "Generar pendiente asociado")]);
+    let tipoReg = g("tipoReg", "Oficial");
+    const fTipoReg = segmented(["Oficial", "Borrador"], tipoReg, (v) => { tipoReg = v; auto && auto.save(); });
 
     const critHint = el("div", { class: "field-hint" });
     function actualizarCrit() {
@@ -259,10 +311,19 @@
         ? "⚠️ <b>Flujo crítico</b>: se medirán los días de detención y se creará un pendiente con las tareas del ciclo."
         : "Flujo normal: se mide el ciclo administrativo del expediente.";
     }
-    fEstado.querySelectorAll(".seg").forEach((b) => b.addEventListener("click", actualizarCrit));
-    setTimeout(actualizarCrit, 0);
+    setTimeout(() => { actualizarCrit(); toggleTD(); }, 0);
 
+    const collect = () => ({
+      tipoEvento: fTipoEvento.value, requerimiento: fReq.value, fechaDocumento: fFecha.value,
+      folio: fFolio.value, tecnico: fTec.value, estadoEquipo: fEstado.getValue(), tipoCompra: fCompra.value,
+      tdNum: tdNum.value, tdFecha: tdFecha.value, tdResp: tdResp.value, tdEmpresa: tdEmpresa.value,
+      ocNum: ocNum.value, ocFecha: ocFecha.value, ocDesc: ocDesc.value,
+      gestion: gestionCb.checked, tipoReg: fTipoReg.getValue(),
+    });
+
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.correctivo(equipoKey, onSaved); }) : null;
     const form = el("div", { class: "form-grid" }, [
+      note,
       field("Tipo de evento", fTipoEvento),
       field("Requerimiento", fReq),
       field("Fecha del documento", fFecha),
@@ -272,9 +333,7 @@
       field("Tipo de compra", fCompra),
       tdBox,
       el("div", { class: "subform-title" }, "Orden de compra (opcional)"),
-      el("div", { class: "form-grid" }, [
-        field("N° orden de compra", ocNum), field("Fecha OC", ocFecha),
-      ]),
+      el("div", { class: "form-grid" }, [field("N° orden de compra", ocNum), field("Fecha OC", ocFecha)]),
       field("Descripción OC", ocDesc),
       field("Gestión pendiente", fGestion),
       field("Tipo de registro", fTipoReg),
@@ -285,7 +344,7 @@
       title: "Mantenimiento Correctivo · " + eq.equipo,
       size: "lg", body: form,
       footer: [
-        UI.btn("Cancelar", "ghost", () => { MP.grabacion.notarFormulario("correctivo", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("correctivo", "cancelado", Date.now() - t0); m.close(); }),
         UI.btn("Abrir expediente", "primary", () => {
           if (!fFolio.value.trim()) { UI.toast("Ingrese el folio SIGEM.", "warn"); return; }
           Store.crearExpediente({
@@ -295,14 +354,16 @@
             informeTecnico: fCompra.value === "Trato Directo" && tdNum.value
               ? { numero: tdNum.value, fecha: tdFecha.value, responsable: tdResp.value, empresa: tdEmpresa.value } : null,
             ordenCompra: ocNum.value ? { numero: ocNum.value, fecha: ocFecha.value, descripcion: ocDesc.value } : null,
-            gestionPendiente: gestion, tipoRegistro: tipoReg,
+            gestionPendiente: gestionCb.checked, tipoRegistro: tipoReg,
           });
+          auto.stopped = true; F._clearDraft(key);
           MP.grabacion.notarFormulario("correctivo", "guardado", Date.now() - t0);
           UI.toast("Expediente correctivo abierto.", "ok");
           m.close(); onSaved && onSaved();
         }),
       ],
     });
+    const auto = wireAutosave(m.body, key, collect);
   };
 
   /* =====================================================================
@@ -382,7 +443,6 @@
           dyn.appendChild(field("Empresa / proveedor", emp));
         dyn.appendChild(field("Detalle", nota));
       }
-      // Aviso cronológico
       validarCronologia();
     }
     const cronoHint = el("div", { class: "field-hint" });

@@ -34,7 +34,9 @@
       const key = U.equipoKey(e);
       const est = Store.estadoEquipo(key);
       const pend = Store.pendientesAbiertosDe(key);
+      const corr = Store.expedientesDe(key).filter((x) => x.estadoEvento !== "Cerrado").length;
       return {
+        _corr: corr,
         _eq: e, _key: key,
         id: e.id, nCarpeta: e.nCarpeta, nInventario: e.nInventario, equipo: e.equipo,
         servicio: e.servicio, unidad: e.unidad, ubicacion: e.ubicacion, procedencia: e.procedencia,
@@ -61,7 +63,15 @@
       { key: "vidaUtilResidual", label: "Vida Útil Res.", defaultVisible: false, align: "right" },
       { key: "clasificacion", label: "Clasificación", defaultVisible: false },
       { key: "enuBaja", label: "ENU/Baja", defaultVisible: false },
-      { key: "_estado", label: "Estado", render: (r) => chipEstado(r._estado), text: (r) => r._estado },
+      { key: "_estado", label: "Estado", text: (r) => r._estado + (r._corr > 0 ? " · correctivo" : ""),
+        render: (r) => {
+          const wrap = el("span", { class: "estado-cell" }, [chipEstado(r._estado)]);
+          if (r._corr > 0) wrap.appendChild(el("span", { class: "corr-badge", title: r._corr + " expediente(s) correctivo(s) abierto(s) — clic en la fila para verlos" }, "🔧" + r._corr));
+          return wrap;
+        } },
+      { key: "_corr", label: "Correctivo abierto", align: "center", defaultVisible: false,
+        render: (r) => r._corr > 0 ? el("span", { class: "chip warn" }, r._corr) : el("span", { class: "muted" }, "0"),
+        text: (r) => String(r._corr) },
       { key: "_dias", label: "Días en estado", align: "right",
         render: (r) => el("span", {}, r._dias === null ? "—" : r._dias + " d"), text: (r) => r._dias === null ? "" : String(r._dias) },
       { key: "_ultima", label: "Última actualización",
