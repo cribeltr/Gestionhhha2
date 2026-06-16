@@ -3,3 +3,4 @@ package.json
 package-lock.json
 *.log
 .DS_Store
+dist/Backup_GestionMP2026_restaurable.json
