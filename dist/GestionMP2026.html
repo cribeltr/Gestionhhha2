@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gestión MP 2026 · Mantenciones Preventivas de Equipos</title>
+<style>
+/* =========================================================================
+ * MP 2026 · styles.css — Identidad visual clínica/hospitalaria.
+ * ========================================================================= */
+:root {
+  --azul: #0d6efd;        --azul-d: #0a58ca;       --azul-l: #e7f1ff;
+  --teal: #0b8a8f;        --teal-d: #096e72;       --teal-l: #e3f6f6;
+  --verde: #1a9c5b;       --verde-l: #e4f6ec;
+  --amber: #d98300;       --amber-l: #fff3e0;
+  --rojo: #d6336c;        --rojo2: #c92a2a;        --rojo-l: #fce8ee;
+  --gris-0: #ffffff;      --gris-1: #f6f8fb;       --gris-2: #eef2f7;
+  --gris-3: #dde4ee;      --gris-4: #aab4c4;       --gris-5: #6b7585;
+  --tinta: #1c2533;       --tinta-2: #38445a;
+  --sombra: 0 1px 2px rgba(16,30,54,.06), 0 2px 8px rgba(16,30,54,.08);
+  --sombra-lg: 0 8px 30px rgba(16,30,54,.18);
+  --radio: 10px;          --radio-sm: 7px;
+  --topbar-h: 60px;       --side-w: 232px;
+  --ff: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--ff); color: var(--tinta); background: var(--gris-1); font-size: 14px; line-height: 1.45; }
+h2, h3, h4 { margin: 0 0 .3em; color: var(--tinta); }
+a { color: var(--azul); text-decoration: none; }
+.muted { color: var(--gris-5); }
+.hidden { display: none !important; }
+.ta-right { text-align: right; }
+.ta-center { text-align: center; }
+
+/* ---------- Layout ---------- */
+.topbar {
+  height: var(--topbar-h); background: linear-gradient(100deg, var(--teal-d), var(--teal));
+  color: #fff; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px; position: sticky; top: 0; z-index: 40; box-shadow: var(--sombra);
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 38px; height: 38px; border-radius: 9px; background: rgba(255,255,255,.18);
+  display: grid; place-items: center; font-size: 22px; font-weight: 700; }
+.brand-title { font-weight: 700; font-size: 16px; letter-spacing: .2px; }
+.brand-sub { font-size: 11.5px; opacity: .85; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.topbar-btn { background: rgba(255,255,255,.14); color: #fff; border: 1px solid rgba(255,255,255,.22);
+  padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 7px; }
+.topbar-btn:hover { background: rgba(255,255,255,.26); }
+.rec-dot { width: 9px; height: 9px; border-radius: 50%; background: #ff6b6b; box-shadow: 0 0 0 0 rgba(255,107,107,.6); }
+#grab-btn.recording { background: var(--rojo2); border-color: var(--rojo2); }
+#grab-btn.recording .rec-dot { animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(255,107,107,.6);} 70%{box-shadow:0 0 0 7px rgba(255,107,107,0);} 100%{box-shadow:0 0 0 0 rgba(255,107,107,0);} }
+
+.layout { display: flex; align-items: stretch; min-height: calc(100vh - var(--topbar-h)); }
+.sidebar { width: var(--side-w); background: var(--gris-0); border-right: 1px solid var(--gris-3);
+  padding: 12px 10px; position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h)); flex: 0 0 auto; }
+.nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: 9px;
+  color: var(--tinta-2); font-weight: 500; margin-bottom: 3px; cursor: pointer; position: relative; }
+.nav-item:hover { background: var(--gris-2); }
+.nav-item.active { background: var(--teal-l); color: var(--teal-d); font-weight: 600; }
+.nav-ico { font-size: 17px; width: 22px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--rojo); color: #fff; border-radius: 11px;
+  font-size: 11px; padding: 1px 7px; font-weight: 700; }
+.main { flex: 1 1 auto; min-width: 0; padding: 20px 22px 40px; }
+.view-head { margin-bottom: 14px; }
+.view-head h2 { font-size: 20px; }
+.view-sub { color: var(--gris-5); margin: 0; font-size: 13px; }
+
+/* ---------- Botones ---------- */
+.btn { font-family: var(--ff); border: 1px solid transparent; border-radius: 8px; padding: 8px 14px;
+  font-size: 13.5px; cursor: pointer; background: var(--gris-2); color: var(--tinta); font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px; transition: .12s; }
+.btn:hover { filter: brightness(.97); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn.primary:hover { background: var(--azul-d); }
+.btn.secondary { background: var(--teal); color: #fff; border-color: var(--teal); }
+.btn.secondary:hover { background: var(--teal-d); }
+.btn.ghost { background: #fff; border-color: var(--gris-3); color: var(--tinta-2); }
+.btn.ghost:hover { background: var(--gris-1); }
+.btn.danger { background: var(--rojo2); color: #fff; border-color: var(--rojo2); }
+.btn.danger.ghost { background: #fff; color: var(--rojo2); border-color: var(--rojo-l); }
+.btn.sm { padding: 5px 10px; font-size: 12.5px; }
+.btn.chip { background: var(--azul-l); color: var(--azul-d); border-color: transparent; padding: 4px 11px; border-radius: 20px; font-size: 12.5px; }
+.icon-btn { border: 1px solid var(--gris-3); background: #fff; border-radius: 7px; min-width: 30px; height: 28px;
+  padding: 0 7px; cursor: pointer; font-size: 13px; color: var(--tinta-2); }
+.icon-btn:hover { background: var(--gris-2); }
+
+/* ---------- Chips / pills / tags ---------- */
+.chip { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.chip.ok, .estado-ok { background: var(--verde-l); color: var(--verde); }
+.chip.bad, .estado-bad { background: var(--rojo-l); color: var(--rojo2); }
+.chip.warn, .estado-warn { background: var(--amber-l); color: var(--amber); }
+.chip.info { background: var(--azul-l); color: var(--azul-d); }
+.chip.neutral { background: var(--gris-2); color: var(--gris-5); }
+.code-pill { display: inline-block; min-width: 26px; text-align: center; padding: 2px 7px; border-radius: 6px;
+  background: var(--azul-l); color: var(--azul-d); font-weight: 700; font-size: 12px; }
+.code-pill.res { background: var(--teal-l); color: var(--teal-d); }
+.tag { display: inline-block; padding: 1px 7px; border-radius: 5px; font-size: 11px; font-weight: 700; }
+.tag-official { background: var(--verde-l); color: var(--verde); }
+.tag-draft { background: var(--amber-l); color: var(--amber); }
+
+/* ---------- DataTable ---------- */
+.dt { background: #fff; border: 1px solid var(--gris-3); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
+.dt-toolbar { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--gris-2); flex-wrap: wrap; }
+.dt-search { flex: 0 1 280px; padding: 7px 11px; border: 1px solid var(--gris-3); border-radius: 8px; font-size: 13px; }
+.dt-count { font-size: 12.5px; color: var(--gris-5); }
+.dt-spacer { flex: 1 1 auto; }
+.dt-scroll { overflow: auto; max-height: calc(100vh - 280px); }
+.dt-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+.dt-table thead th { position: sticky; top: 0; background: var(--gris-2); z-index: 2; text-align: left;
+  padding: 0; border-bottom: 2px solid var(--gris-3); white-space: nowrap; }
+.dt-grouprow th { background: var(--teal-l); color: var(--teal-d); text-align: center; padding: 5px 8px;
+  border-bottom: 1px solid var(--gris-3); font-size: 12px; font-weight: 700; }
+.dt-grouprow th.dt-group { border-left: 1px solid var(--gris-3); }
+.th-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 9px 10px; }
+.th-label { font-weight: 700; color: var(--tinta-2); font-size: 12.5px; }
+.th-filter { border: none; background: transparent; cursor: pointer; color: var(--gris-4); font-size: 11px; padding: 2px 4px; border-radius: 5px; }
+.th-filter:hover { background: var(--gris-3); color: var(--tinta); }
+.th-filter.active { color: var(--azul); background: var(--azul-l); }
+.dt-table tbody td { padding: 8px 10px; border-bottom: 1px solid var(--gris-2); vertical-align: middle; }
+.dt-table tbody tr:hover { background: var(--gris-1); }
+.dt-table tbody tr.clickable { cursor: pointer; }
+.dt-table tbody tr.row-bad { background: #fdf1f4; }
+.dt-table tbody tr.row-bad:hover { background: #fbe7ec; }
+.dt-table tbody tr.row-warn { background: #fff7ea; }
+.dt-table tbody tr.urg-row-atrasado { background: #fdf1f4; }
+.dt-table tbody tr.urg-row-hoy { background: #fff7ea; }
+.dt-table tbody tr.urg-row-completado { color: var(--gris-5); }
+.dt-empty { text-align: center; color: var(--gris-5); padding: 30px; }
+.dt-pag { display: flex; align-items: center; gap: 6px; padding: 9px 12px; border-top: 1px solid var(--gris-2); }
+.dt-pageinfo { font-size: 12.5px; color: var(--gris-5); }
+.dt-pagesize { margin-left: auto; padding: 5px 8px; border: 1px solid var(--gris-3); border-radius: 7px; font-size: 12.5px; }
+.row-actions { display: flex; gap: 3px; }
+
+/* ---------- Popover de filtro ---------- */
+.dt-pop { background: #fff; border: 1px solid var(--gris-3); border-radius: var(--radio-sm); box-shadow: var(--sombra-lg);
+  width: 250px; z-index: 100; padding: 8px; }
+.dt-pop-title { font-weight: 700; font-size: 12.5px; padding: 2px 4px 6px; color: var(--tinta-2); }
+.dt-pop-sort { display: flex; gap: 5px; margin-bottom: 6px; }
+.dt-pop-sort .btn { flex: 1; justify-content: center; }
+.dt-pop-search { width: 100%; padding: 6px 9px; border: 1px solid var(--gris-3); border-radius: 7px; font-size: 12.5px; margin-bottom: 6px; }
+.dt-pop-list { max-height: 200px; overflow: auto; border: 1px solid var(--gris-2); border-radius: 7px; padding: 4px; }
+.dt-pop-item { display: flex; align-items: center; gap: 7px; padding: 4px 6px; font-size: 12.5px; border-radius: 5px; cursor: pointer; }
+.dt-pop-item:hover { background: var(--gris-1); }
+.dt-pop-item.all { border-bottom: 1px solid var(--gris-2); font-weight: 600; margin-bottom: 2px; }
+.dt-pop-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dt-pop-foot { display: flex; gap: 6px; margin-top: 7px; }
+.dt-pop-foot .btn { flex: 1; justify-content: center; }
+
+/* ---------- Métricas ---------- */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.metric { background: #fff; border: 1px solid var(--gris-3); border-left: 4px solid var(--gris-4);
+  border-radius: var(--radio); padding: 12px 14px; box-shadow: var(--sombra); }
+.metric-val { font-size: 24px; font-weight: 800; line-height: 1.1; color: var(--tinta); }
+.metric-label { font-size: 12px; color: var(--gris-5); margin-top: 2px; }
+.metric-bad { border-left-color: var(--rojo2); } .metric-bad .metric-val { color: var(--rojo2); }
+.metric-warn { border-left-color: var(--amber); } .metric-warn .metric-val { color: var(--amber); }
+.metric-ok { border-left-color: var(--verde); } .metric-ok .metric-val { color: var(--verde); }
+.metric-info { border-left-color: var(--azul); } .metric-info .metric-val { color: var(--azul); }
+.metric-neutral { border-left-color: var(--teal); }
+
+/* ---------- Modal ---------- */
+.modal-overlay { position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80; display: flex;
+  align-items: flex-start; justify-content: center; padding: 40px 16px; overflow: auto; backdrop-filter: blur(2px); }
+.modal-box { background: #fff; border-radius: 14px; box-shadow: var(--sombra-lg); width: 100%; max-width: 640px;
+  animation: pop .16s ease; }
+.modal-box.sm { max-width: 420px; } .modal-box.md { max-width: 620px; }
+.modal-box.lg { max-width: 820px; } .modal-box.xl { max-width: 1040px; }
+@keyframes pop { from { transform: translateY(8px) scale(.99); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+  border-bottom: 1px solid var(--gris-2); }
+.modal-head h3 { font-size: 16px; margin: 0; }
+.modal-x { border: none; background: var(--gris-2); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--gris-5); }
+.modal-x:hover { background: var(--gris-3); }
+.modal-body { padding: 18px 20px; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 9px; padding: 14px 20px; border-top: 1px solid var(--gris-2); }
+.modal-foot.inline { border-top: 1px solid var(--gris-2); margin-top: 16px; padding: 14px 0 0; }
+.confirm-msg { font-size: 14px; }
+
+/* ---------- Formularios ---------- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px 16px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field.full, .form-grid > .field-hint, .form-grid > .subform, .form-grid > .subform-title { grid-column: 1 / -1; }
+.field-label { font-size: 12.5px; font-weight: 600; color: var(--tinta-2); }
+.field-hint { font-size: 12px; color: var(--gris-5); background: var(--gris-1); padding: 7px 10px; border-radius: 7px; }
+.ctrl { width: 100%; padding: 8px 11px; border: 1px solid var(--gris-3); border-radius: 8px; font-size: 13.5px; font-family: var(--ff); background: #fff; }
+.ctrl:focus { outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px var(--azul-l); }
+textarea.ctrl { resize: vertical; }
+.segmented { display: inline-flex; border: 1px solid var(--gris-3); border-radius: 8px; overflow: hidden; }
+.seg { border: none; background: #fff; padding: 8px 16px; cursor: pointer; font-size: 13px; color: var(--tinta-2); border-right: 1px solid var(--gris-3); }
+.seg:last-child { border-right: none; }
+.seg.active { background: var(--azul); color: #fff; font-weight: 600; }
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer; }
+.quick-dates { display: flex; gap: 6px; margin-top: 6px; }
+.subform { background: var(--gris-1); border: 1px dashed var(--gris-3); border-radius: 9px; padding: 12px; }
+.subform-title { font-weight: 700; font-size: 13px; color: var(--teal-d); margin-top: 4px; }
+.readonly-val { padding: 8px 11px; background: var(--gris-1); border-radius: 8px; font-size: 13.5px; }
+.tareas-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 6px; }
+.tarea-row { display: flex; align-items: center; gap: 8px; }
+.tarea-txt.done { text-decoration: line-through; color: var(--gris-5); }
+.add-tarea { display: flex; gap: 6px; }
+.add-tarea .ctrl { flex: 1; }
+
+/* ---------- Detalle de equipo ---------- */
+.detalle-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; font-size: 13px; }
+.detalle-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 18px; }
+.sec-title { font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: var(--gris-5);
+  border-bottom: 1px solid var(--gris-2); padding-bottom: 5px; margin: 20px 0 11px; }
+.kv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.kv { background: var(--gris-1); border: 1px solid var(--gris-2); border-radius: 8px; padding: 7px 11px; cursor: pointer; transition: .12s; }
+.kv:hover { border-color: var(--azul); background: var(--azul-l); }
+.kv.copied { border-color: var(--verde); background: var(--verde-l); }
+.kv-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .4px; color: var(--gris-5); }
+.kv-value { font-size: 13.5px; font-weight: 600; color: var(--tinta); word-break: break-word; }
+.mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mini-table th { text-align: left; background: var(--gris-2); padding: 7px 9px; font-size: 12px; color: var(--tinta-2); }
+.mini-table td { padding: 7px 9px; border-bottom: 1px solid var(--gris-2); vertical-align: top; }
+.mant-app { font-size: 12.5px; margin-bottom: 3px; }
+.pend-mini-list { display: flex; flex-direction: column; gap: 8px; }
+.pend-mini { display: flex; justify-content: space-between; gap: 10px; align-items: center;
+  background: var(--gris-1); border: 1px solid var(--gris-2); border-radius: 9px; padding: 9px 12px; }
+.pend-mini-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+
+/* ---------- Expediente correctivo ---------- */
+.exp-card { border: 1px solid var(--gris-3); border-radius: var(--radio); padding: 14px; margin-bottom: 12px; background: #fff; }
+.exp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.exp-head .chip { margin-left: 7px; }
+.exp-req { font-style: italic; margin: 6px 0; }
+.exp-quick { background: var(--azul-l); border-radius: 8px; padding: 9px 12px; margin: 10px 0; font-size: 13px; display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.exp-foot { display: flex; gap: 8px; margin-top: 10px; }
+.timeline { border-left: 2px solid var(--gris-3); margin: 8px 0 4px 8px; padding-left: 0; }
+.tl-item { position: relative; padding: 5px 0 12px 20px; }
+.tl-dot { position: absolute; left: -7px; top: 8px; width: 11px; height: 11px; border-radius: 50%; background: var(--teal); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--gris-3); }
+.tl-title { font-size: 13px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.tl-date { color: var(--azul-d); font-weight: 600; font-size: 12.5px; }
+.tl-corr { color: var(--amber); font-size: 11.5px; }
+.tl-det { font-size: 12.5px; margin-top: 2px; }
+.tl-reg { font-size: 11px; color: var(--gris-4); }
+.tl-del { min-width: 22px; height: 22px; padding: 0; margin-left: auto; }
+
+/* ---------- Operatividad ---------- */
+.oper-list { display: flex; flex-direction: column; gap: 10px; }
+.oper-card { display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid var(--gris-3); border-left: 5px solid var(--gris-4);
+  border-radius: var(--radio); padding: 13px 16px; box-shadow: var(--sombra); flex-wrap: wrap; }
+.oper-card.crit-1 { border-left-color: var(--rojo2); }
+.oper-card.crit-2 { border-left-color: var(--amber); }
+.oper-card.crit-3 { border-left-color: var(--azul); }
+.oper-title { font-size: 14px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.oper-sub { font-size: 12.5px; margin-top: 3px; }
+.oper-actions { display: flex; gap: 7px; flex: 0 0 auto; }
+
+/* ---------- Bitácora / gestión ---------- */
+.bitacora { display: flex; flex-direction: column; gap: 5px; }
+.bit-item { font-size: 12.5px; background: var(--gris-1); border-radius: 7px; padding: 6px 10px; }
+.bit-date { font-weight: 700; color: var(--teal-d); margin-right: 6px; }
+.gestion-box { display: flex; gap: 7px; align-items: flex-start; margin-top: 8px; }
+.gestion-box .ctrl { flex: 1; }
+
+/* ---------- Datos ---------- */
+.data-summary { display: flex; gap: 22px; flex-wrap: wrap; background: #fff; border: 1px solid var(--gris-3);
+  border-radius: var(--radio); padding: 14px 18px; margin-bottom: 16px; box-shadow: var(--sombra); }
+.data-stat { display: flex; flex-direction: column; }
+.data-stat b { font-size: 21px; } .data-stat span { font-size: 12px; color: var(--gris-5); }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.data-card { background: #fff; border: 1px solid var(--gris-3); border-radius: var(--radio); padding: 16px; box-shadow: var(--sombra); }
+.data-card-ico { font-size: 26px; } .data-card h3 { font-size: 15px; margin: 6px 0; }
+.data-card p { font-size: 12.5px; margin: 0 0 12px; }
+.data-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Estados varios ---------- */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--gris-5); }
+.empty-ico { font-size: 46px; margin-bottom: 8px; }
+.empty-state h2 { color: var(--tinta-2); }
+.empty-state p { max-width: 460px; margin: 6px auto 16px; }
+.error-box { background: var(--rojo-l); color: var(--rojo2); padding: 12px 16px; border-radius: 9px; }
+
+/* ---------- Nota de borrador recuperado ---------- */
+.draft-note { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; background: #fff8e1; border: 1px solid #ffe082; color: #8a6d00;
+  border-radius: 8px; padding: 8px 12px; font-size: 12.5px; }
+
+/* ---------- Indicador de correctivo en Equipos ---------- */
+.estado-cell { display: inline-flex; align-items: center; gap: 6px; }
+.corr-badge { background: var(--amber-l); color: var(--amber); border-radius: 20px;
+  font-size: 11px; font-weight: 700; padding: 1px 7px; cursor: help; }
+
+/* ---------- Toasts ---------- */
+.toast-cont { position: fixed; bottom: 18px; right: 18px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--tinta); color: #fff; padding: 11px 16px; border-radius: 9px; font-size: 13px;
+  box-shadow: var(--sombra-lg); opacity: 0; transform: translateX(20px); transition: .25s; max-width: 340px; }
+.toast.show { opacity: 1; transform: none; }
+.toast-ok { background: var(--verde); } .toast-warn { background: var(--amber); } .toast-info { background: var(--azul-d); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 820px) {
+  .sidebar { position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100%; height: auto;
+    display: flex; gap: 4px; overflow-x: auto; border-top: 1px solid var(--gris-3); z-index: 50; padding: 6px; }
+  .nav-item { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 10px; }
+  .nav-label { font-size: 10.5px; } .nav-badge { position: absolute; top: 2px; right: 6px; margin: 0; }
+  .main { padding: 14px 12px 80px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .brand-sub { display: none; }
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head><body><div id="app"></div>
+<script>
+/* ===== assets/js/core/utils.js ===== */
+/* =========================================================================
+ * MP 2026 · utils.js
+ * Constantes del dominio y utilidades transversales.
+ * Basado en la especificación "Flujo Sistema Gestión MP 2026".
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+
+  const MP = global.MP || (global.MP = {});
+
+  /* ----- Meses (claves internas y etiquetas) -------------------------- */
+  const MESES = [
+    { key: "ene", label: "Ene", nombre: "Enero", num: 1 },
+    { key: "feb", label: "Feb", nombre: "Febrero", num: 2 },
+    { key: "mar", label: "Mar", nombre: "Marzo", num: 3 },
+    { key: "abr", label: "Abr", nombre: "Abril", num: 4 },
+    { key: "may", label: "May", nombre: "Mayo", num: 5 },
+    { key: "jun", label: "Jun", nombre: "Junio", num: 6 },
+    { key: "jul", label: "Jul", nombre: "Julio", num: 7 },
+    { key: "ago", label: "Ago", nombre: "Agosto", num: 8 },
+    { key: "sep", label: "Sep", nombre: "Septiembre", num: 9 },
+    { key: "oct", label: "Oct", nombre: "Octubre", num: 10 },
+    { key: "nov", label: "Nov", nombre: "Noviembre", num: 11 },
+    { key: "dic", label: "Dic", nombre: "Diciembre", num: 12 },
+  ];
+
+  /* ----- Códigos de Programación (Paso 3) ----------------------------- */
+  const PROGRAMA = {
+    X: "Mantención Preventiva Programada",
+    R: "Mantención Preventiva Reprogramada",
+    RA: "Mantención Preventiva Reprogramada de Año Anterior",
+    PM: "Puesta en Marcha",
+  };
+  const PROGRAMA_VALIDOS = ["X", "R", "RA", "PM"];
+
+  /* ----- Códigos de Resultado (Paso 5) -------------------------------- */
+  const RESULTADO = {
+    Si: "Mantención Preventiva Realizada",
+    C1: "Reprogramada — Imposibilidad de desocupar el equipo del paciente por indicación clínica",
+    C2: "Reprogramada — Equipo en servicio técnico",
+    C3: "Reprogramada — Equipo no operativo, a la espera de repuestos o accesorios",
+    C4: "Reprogramada — Equipo en préstamo a otro hospital o institución",
+    C5: "Reprogramada — No disponibilidad de horas hombre del funcionario SEC por alta carga laboral",
+    C6: "Reprogramada — No disponibilidad de horas hombre del servicio técnico externo",
+    C7: "Reprogramada — Ausencia justificada del funcionario SEC superior a 15 días",
+    C8: "Reprogramada — Contingencia hospitalaria",
+    "Si-RA": "Mantención de Año Anterior Realizada",
+    FS: "Fuera de Servicio",
+    No: "No Realizada",
+    NU: "No Ubicable",
+    Baja: "Equipo Dado de Baja",
+  };
+  const RESULTADO_VALIDOS = [
+    "Si", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
+    "Si-RA", "FS", "No", "NU", "Baja",
+  ];
+
+  /* ----- Causales de reprogramación (Paso 6) -------------------------- */
+  const CAUSALES = {
+    C1: "Imposibilidad de desocupar el equipo del paciente por indicación clínica",
+    C2: "Equipo en servicio técnico",
+    C3: "Equipo no operativo, a la espera de repuestos o accesorios",
+    C4: "Equipo en préstamo a otro hospital o institución",
+    C5: "No disponibilidad de horas hombre del funcionario SEC por alta carga laboral",
+    C6: "No disponibilidad de horas hombre del servicio técnico externo",
+    C7: "Ausencia justificada del funcionario SEC superior a 15 días",
+    C8: "Contingencia hospitalaria",
+  };
+  // C2,C3,C4 -> sin nueva fecha (se registra en el mes real de ejecución).
+  // C1,C5,C6,C7,C8 -> reprogramar dentro de 30 días.
+  const CAUSALES_REPROGRAMA_30 = ["C1", "C5", "C6", "C7", "C8"];
+  const CAUSALES_SIN_FECHA = ["C2", "C3", "C4"];
+
+  /* ----- Ejecutores (Paso 8) ------------------------------------------ */
+  const EJECUTORES = [
+    "Carlos Bahamondes Seguel",
+    "Cristián Beltrán Oviedo",
+    "Cristina Rozas Urrutia",
+    "Daniel Díaz Neira",
+    "Ignacio Berner Bergara",
+    "Macarena Toledo",
+    "Marco Ulloa",
+    "Matías Soazo Garrido",
+    "Ricardo Matus Aroca",
+    "Tito Millapán Riquelme",
+    "Personal Externo",
+  ];
+
+  /* ----- Tipos de pendiente (Paso 9) ---------------------------------- */
+  const TIPOS_PENDIENTE = [
+    "Reprogramación Mantención Preventiva",
+    "Protocolo Interno de Mantenimiento",
+    "Protocolo Externo de Mantenimiento",
+    "Pauta de Monitoreo Diario",
+    "Imprimir Documento",
+    "Otro",
+  ];
+
+  /* ----- Mantenimiento correctivo (Paso 10) --------------------------- */
+  const TIPOS_EVENTO = ["Orden de Trabajo", "Reporte de Servicio"];
+  const ESTADOS_EQUIPO_CORR = ["Operativo", "No Operativo", "Servicio Técnico"];
+  const TIPOS_COMPRA = ["Trato Directo", "Compra Ágil"];
+  const EMPRESAS = [
+    "Medtronic Chile",
+    "Draeger Medical",
+    "Philips Healthcare",
+    "GE HealthCare",
+    "Biomédica Austral Ltda.",
+    "Servicio Técnico Biomédico Regional",
+    "Equipos Médicos del Sur SpA",
+  ];
+
+  /* ----- Etapas del expediente correctivo (Paso 10 — flujo OT) -------- */
+  const ETAPAS_CORR = {
+    APERTURA: "Apertura",
+    EVALUACION: "Evaluación técnica",
+    COMPRA: "Gestión de compra",
+    ESPERA: "Espera y recepción",
+    EN_ST: "En servicio técnico externo · esperando retorno",
+    RETORNADO_OK: "Retornado · por cerrar",
+    RETORNADO_NOK: "Retornado sin reparar · evaluar",
+    EJECUCION: "Ejecución",
+    CERRADO: "Cerrado",
+  };
+
+  /* ----- Estados de equipo (Paso 2 / 12) ------------------------------ */
+  const ESTADO = {
+    OPERATIVO: "Operativo",
+    NO_OPERATIVO: "No Operativo",
+    SERVICIO_TECNICO: "Servicio Técnico",
+  };
+
+  MP.const = {
+    MESES, PROGRAMA, PROGRAMA_VALIDOS, RESULTADO, RESULTADO_VALIDOS,
+    CAUSALES, CAUSALES_REPROGRAMA_30, CAUSALES_SIN_FECHA,
+    EJECUTORES, TIPOS_PENDIENTE, TIPOS_EVENTO, ESTADOS_EQUIPO_CORR,
+    TIPOS_COMPRA, EMPRESAS, ETAPAS_CORR, ESTADO,
+  };
+
+  /* =====================================================================
+   * Utilidades
+   * =================================================================== */
+  const U = MP.util = {};
+
+  U.uid = function (prefix) {
+    return (prefix || "id") + "_" + Date.now().toString(36) + "_" +
+      Math.random().toString(36).slice(2, 8);
+  };
+
+  // Lee un valor conservando ceros a la izquierda (Serie / N° Inventario).
+  U.asText = function (v) {
+    if (v === null || v === undefined) return "";
+    return String(v).trim();
+  };
+
+  U.todayISO = function () {
+    const d = new Date();
+    return U.dateToISO(d);
+  };
+
+  U.dateToISO = function (d) {
+    if (!d) return "";
+    if (typeof d === "string") return d.slice(0, 10);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  U.parseISO = function (s) {
+    if (!s) return null;
+    const parts = String(s).slice(0, 10).split("-");
+    if (parts.length !== 3) return null;
+    return new Date(+parts[0], +parts[1] - 1, +parts[2]);
+  };
+
+  U.fmtDate = function (s) {
+    const d = U.parseISO(s);
+    if (!d || isNaN(d)) return "";
+    return String(d.getDate()).padStart(2, "0") + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" + d.getFullYear();
+  };
+
+  U.daysBetween = function (aISO, bISO) {
+    const a = U.parseISO(aISO), b = U.parseISO(bISO || U.todayISO());
+    if (!a || !b) return null;
+    return Math.round((b - a) / 86400000);
+  };
+
+  U.addDays = function (iso, n) {
+    const d = U.parseISO(iso) || new Date();
+    d.setDate(d.getDate() + n);
+    return U.dateToISO(d);
+  };
+
+  U.mesKeyFromISO = function (iso) {
+    const d = U.parseISO(iso);
+    if (!d) return null;
+    return MESES[d.getMonth()].key;
+  };
+
+  U.mesNombre = function (key) {
+    const m = MESES.find((x) => x.key === key);
+    return m ? m.nombre : key;
+  };
+
+  U.lastDayOfMonthISO = function (year, monthNum) {
+    const d = new Date(year, monthNum, 0);
+    return U.dateToISO(d);
+  };
+
+  // Escapa HTML para inyección segura en innerHTML.
+  U.esc = function (s) {
+    if (s === null || s === undefined) return "";
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  };
+
+  // Crea un elemento DOM con atributos e hijos.
+  U.el = function (tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") node.className = attrs[k];
+        else if (k === "html") node.innerHTML = attrs[k];
+        else if (k === "text") node.textContent = attrs[k];
+        else if (k.startsWith("on") && typeof attrs[k] === "function") {
+          node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+        } else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false) {
+          node.setAttribute(k, attrs[k]);
+        }
+      }
+    }
+    if (children !== null && children !== undefined) {
+      (Array.isArray(children) ? children : [children]).forEach((c) => {
+        if (c === null || c === undefined || c === false) return;
+        node.appendChild(typeof c === "string" || typeof c === "number"
+          ? document.createTextNode(String(c)) : c);
+      });
+    }
+    return node;
+  };
+
+  // Clave única de equipo: Serie o, en su defecto, N° Inventario (Paso 1).
+  U.equipoKey = function (eq) {
+    if (!eq) return "";
+    const serie = U.asText(eq.serie);
+    if (serie) return "S:" + serie;
+    const inv = U.asText(eq.nInventario);
+    if (inv) return "I:" + inv;
+    return "ID:" + U.asText(eq.id);
+  };
+
+  // Normaliza texto para búsqueda (sin acentos, minúsculas).
+  U.norm = function (s) {
+    return U.asText(s).toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "");
+  };
+
+})(window);
+
+
+/* ===== assets/js/core/store.js ===== */
+/* =========================================================================
+ * MP 2026 · store.js
+ * Capa de datos: estado en memoria, persistencia en localStorage,
+ * y derivaciones (estado del equipo, etapas de expediente, pendientes).
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+
+  const KEY = "mp2026_db_v1";
+
+  const DB = {
+    equipos: [],          // Paso 1
+    mantenciones: [],     // Paso 8 (registradas en la app)
+    pendientes: [],       // Paso 9
+    expedientes: [],      // Paso 10 / 15 (correctivo)
+    meta: { creado: null, ultimaCarga: null },
+  };
+
+  const Store = MP.store = {};
+  const listeners = [];
+
+  Store.db = DB;
+
+  Store.onChange = function (fn) { listeners.push(fn); };
+  Store.emit = function () { listeners.forEach((f) => { try { f(); } catch (e) { console.error(e); } }); };
+
+  /* ----- Persistencia ------------------------------------------------- */
+  Store.save = function () {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        equipos: DB.equipos, mantenciones: DB.mantenciones,
+        pendientes: DB.pendientes, expedientes: DB.expedientes, meta: DB.meta,
+      }));
+    } catch (e) { console.error("No se pudo guardar", e); }
+  };
+
+  Store.load = function () {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+      DB.equipos = data.equipos || [];
+      DB.mantenciones = data.mantenciones || [];
+      DB.pendientes = data.pendientes || [];
+      DB.expedientes = data.expedientes || [];
+      DB.meta = data.meta || { creado: null, ultimaCarga: null };
+      return true;
+    } catch (e) { console.error("No se pudo cargar", e); return false; }
+  };
+
+  Store.commit = function () { Store.save(); Store.emit(); };
+
+  Store.reset = function () {
+    DB.equipos = []; DB.mantenciones = []; DB.pendientes = []; DB.expedientes = [];
+    DB.meta = { creado: new Date().toISOString(), ultimaCarga: null };
+    Store.commit();
+  };
+
+  /* ----- Backup / Restauración (Paso 11) ------------------------------ */
+  Store.exportBackup = function () {
+    return JSON.stringify({
+      _app: "MP2026", _version: 1, _fecha: new Date().toISOString(),
+      equipos: DB.equipos, mantenciones: DB.mantenciones,
+      pendientes: DB.pendientes, expedientes: DB.expedientes, meta: DB.meta,
+    }, null, 2);
+  };
+
+  Store.importBackup = function (json) {
+    const data = typeof json === "string" ? JSON.parse(json) : json;
+    if (!data || !Array.isArray(data.equipos)) throw new Error("Respaldo inválido");
+    DB.equipos = data.equipos || [];
+    DB.mantenciones = data.mantenciones || [];
+    DB.pendientes = data.pendientes || [];
+    DB.expedientes = data.expedientes || [];
+    DB.meta = data.meta || { creado: null, ultimaCarga: null };
+    Store.commit();
+  };
+
+  /* ----- Accesores ---------------------------------------------------- */
+  Store.equipos = function () { return DB.equipos; };
+
+  Store.equipoByKey = function (key) {
+    return DB.equipos.find((e) => U.equipoKey(e) === key) || null;
+  };
+
+  Store.mantencionesDe = function (key) {
+    return DB.mantenciones.filter((m) => m.equipoKey === key);
+  };
+
+  Store.pendientesDe = function (key) {
+    return DB.pendientes.filter((p) => p.equipoKey === key);
+  };
+
+  Store.expedientesDe = function (key) {
+    return DB.expedientes.filter((x) => x.equipoKey === key);
+  };
+
+  /* =====================================================================
+   * Mantenciones preventivas (Paso 8)
+   * =================================================================== */
+  Store.guardarMantencion = function (m) {
+    if (!m.id) {
+      m.id = U.uid("mant");
+      m.createdAt = new Date().toISOString();
+      DB.mantenciones.push(m);
+    } else {
+      const i = DB.mantenciones.findIndex((x) => x.id === m.id);
+      if (i >= 0) DB.mantenciones[i] = Object.assign(DB.mantenciones[i], m);
+      else DB.mantenciones.push(m);
+    }
+    // Generación automática de pendiente (Paso 8: Gestión pendiente Sí).
+    if (m.gestionPendiente && !m._pendienteGenerado) {
+      Store._generarPendienteDeMantencion(m);
+      m._pendienteGenerado = true;
+    }
+    Store.commit();
+    return m;
+  };
+
+  Store._generarPendienteDeMantencion = function (m) {
+    const esCausal = /^C[1-8]$/.test(m.resultado || "");
+    const tipo = esCausal ? "Reprogramación Mantención Preventiva" : "Otro";
+    const reprograma30 = C.CAUSALES_REPROGRAMA_30.includes(m.resultado);
+    const fechaCompromiso = reprograma30 ? U.addDays(m.fecha || U.todayISO(), 30)
+      : U.addDays(U.todayISO(), 7);
+    Store.crearPendiente({
+      equipoKey: m.equipoKey,
+      tipo,
+      descripcion: esCausal
+        ? "Generado automáticamente desde mantención preventiva (" + m.resultado + "): " +
+          (C.CAUSALES[m.resultado] || "")
+        : "Generado automáticamente desde mantención preventiva.",
+      fechaCompromiso,
+      origen: "preventivo",
+      vinculoMantencionId: m.id,
+    });
+  };
+
+  Store.eliminarMantencion = function (id) {
+    DB.mantenciones = DB.mantenciones.filter((m) => m.id !== id);
+    Store.commit();
+  };
+
+  /* =====================================================================
+   * Pendientes (Paso 9)
+   * =================================================================== */
+  Store.crearPendiente = function (p) {
+    const nuevo = Object.assign({
+      id: U.uid("pend"),
+      equipoKey: "",
+      fechaCompromiso: U.todayISO(),
+      tipo: "Otro",
+      descripcion: "",
+      tareas: [],
+      responsableAdmin: "Cristián Beltrán Oviedo",
+      responsableEjecutivo: "",
+      gestiones: [],
+      enEspera: null,        // { motivo }
+      fechaCompletado: null,
+      origen: "manual",
+      vinculoMantencionId: null,
+      createdAt: new Date().toISOString(),
+    }, p);
+    DB.pendientes.push(nuevo);
+    Store.commit();
+    return nuevo;
+  };
+
+  Store.guardarPendiente = function (p) {
+    const i = DB.pendientes.findIndex((x) => x.id === p.id);
+    if (i >= 0) DB.pendientes[i] = Object.assign(DB.pendientes[i], p);
+    else { p.id = p.id || U.uid("pend"); DB.pendientes.push(p); }
+    Store.commit();
+    return p;
+  };
+
+  Store.eliminarPendiente = function (id) {
+    DB.pendientes = DB.pendientes.filter((p) => p.id !== id);
+    Store.commit();
+  };
+
+  Store.agregarGestion = function (pid, texto) {
+    const p = DB.pendientes.find((x) => x.id === pid);
+    if (!p) return;
+    p.gestiones = p.gestiones || [];
+    p.gestiones.push({ fecha: U.todayISO(), texto: texto, ts: new Date().toISOString() });
+    Store.commit();
+  };
+
+  Store.completarPendiente = function (pid, gestion) {
+    const p = DB.pendientes.find((x) => x.id === pid);
+    if (!p) return;
+    p.fechaCompletado = U.todayISO();
+    p.enEspera = null;
+    Store.agregarGestion(pid, gestion || "Pendiente completado.");
+  };
+
+  Store.posponerPendiente = function (pid, dias) {
+    const p = DB.pendientes.find((x) => x.id === pid);
+    if (!p) return;
+    p.fechaCompromiso = U.addDays(p.fechaCompromiso, dias);
+    Store.agregarGestion(pid, "Compromiso pospuesto " + dias + " día(s) → " + U.fmtDate(p.fechaCompromiso));
+  };
+
+  Store.marcarEnEspera = function (pid, motivo) {
+    const p = DB.pendientes.find((x) => x.id === pid);
+    if (!p) return;
+    p.enEspera = { motivo: motivo || "Sin especificar" };
+    Store.agregarGestion(pid, "En espera de un tercero: " + (motivo || ""));
+  };
+
+  Store.reanudarPendiente = function (pid) {
+    const p = DB.pendientes.find((x) => x.id === pid);
+    if (!p) return;
+    p.enEspera = null;
+    Store.agregarGestion(pid, "Espera finalizada, gestión reanudada.");
+  };
+
+  // Estado de gestión deducido automáticamente (Paso 9).
+  Store.estadoPendiente = function (p) {
+    if (p.fechaCompletado) return "Completado";
+    if (p.enEspera) return "En espera";
+    const tareasMarcadas = (p.tareas || []).some((t) => t.hecha);
+    if ((p.gestiones || []).length > 0 || tareasMarcadas) return "En gestión";
+    return "Nuevo";
+  };
+
+  Store.urgenciaPendiente = function (p) {
+    if (p.fechaCompletado) return "Completado";
+    if (p.enEspera) return "En espera";
+    const dias = U.daysBetween(U.todayISO(), p.fechaCompromiso); // futuro positivo
+    if (dias === null) return "Próximo";
+    if (dias < 0) return "Atrasado";
+    if (dias === 0) return "Hoy";
+    if (dias <= 7) return "Esta semana";
+    return "Próximo";
+  };
+
+  Store.diasAtraso = function (p) {
+    if (p.fechaCompletado || p.enEspera) return 0;
+    const d = U.daysBetween(p.fechaCompromiso, U.todayISO());
+    return d > 0 ? d : 0;
+  };
+
+  /* =====================================================================
+   * Expedientes correctivos (Paso 10 / 15)
+   * =================================================================== */
+  Store.crearExpediente = function (x) {
+    const nuevo = Object.assign({
+      id: U.uid("exp"),
+      folioSigem: "",
+      equipoKey: "",
+      tipoEvento: "Orden de Trabajo",
+      requerimiento: "",
+      fechaDocumento: U.todayISO(),
+      tecnico: "",
+      estadoEquipo: "No Operativo",
+      tipoCompra: "",
+      informeTecnico: null,   // { numero, fecha, responsable, empresa }
+      ordenCompra: null,      // { numero, fecha, descripcion }
+      estadoEvento: "Abierto",
+      fechaCierre: null,
+      avances: [],            // bitácora auditable
+      gestionPendiente: false,
+      tipoRegistro: "Oficial",
+      pendienteId: null,
+      createdAt: new Date().toISOString(),
+    }, x);
+    DB.expedientes.push(nuevo);
+    // Flujo crítico: equipo No Operativo crea pendiente con tareas del ciclo.
+    if (nuevo.estadoEquipo === "No Operativo") {
+      const pend = Store.crearPendiente({
+        equipoKey: nuevo.equipoKey,
+        tipo: "Protocolo Externo de Mantenimiento",
+        descripcion: "Ciclo correctivo (flujo crítico) — Folio " + (nuevo.folioSigem || "s/folio"),
+        fechaCompromiso: U.addDays(U.todayISO(), 7),
+        origen: "correctivo",
+        tareas: [
+          { texto: "Solicitar cotización al proveedor", hecha: false },
+          { texto: "Recibir cotización (n° y fecha)", hecha: false },
+          { texto: "Elaborar informe técnico", hecha: false },
+          { texto: "Emitir orden de compra", hecha: false },
+          { texto: "Enviar orden de compra al proveedor", hecha: false },
+        ],
+      });
+      nuevo.pendienteId = pend.id;
+    }
+    Store.commit();
+    return nuevo;
+  };
+
+  Store.guardarExpediente = function (x) {
+    const i = DB.expedientes.findIndex((e) => e.id === x.id);
+    if (i >= 0) DB.expedientes[i] = Object.assign(DB.expedientes[i], x);
+    else DB.expedientes.push(x);
+    Store.commit();
+    return x;
+  };
+
+  Store.eliminarExpediente = function (id) {
+    DB.expedientes = DB.expedientes.filter((x) => x.id !== id);
+    Store.commit();
+  };
+
+  // Registrar avance (bitácora auditable, Paso 10 / 12).
+  Store.registrarAvance = function (expId, avance) {
+    const x = DB.expedientes.find((e) => e.id === expId);
+    if (!x) return null;
+    const a = Object.assign({
+      id: U.uid("av"),
+      tipo: "nota",
+      fechaReal: U.todayISO(),
+      fechaRegistro: U.todayISO(),
+      fechaCorreccion: null,
+      datos: {},
+    }, avance);
+    x.avances = x.avances || [];
+    x.avances.push(a);
+    if (a.tipo === "cierre") {
+      x.estadoEvento = "Cerrado";
+      x.fechaCierre = a.fechaReal;
+    }
+    Store.commit();
+    return a;
+  };
+
+  Store.corregirAvance = function (expId, avId, cambios) {
+    const x = DB.expedientes.find((e) => e.id === expId);
+    if (!x) return;
+    const a = (x.avances || []).find((v) => v.id === avId);
+    if (!a) return;
+    Object.assign(a, cambios);
+    a.fechaCorreccion = U.todayISO();
+    Store.commit();
+  };
+
+  Store.eliminarAvance = function (expId, avId) {
+    const x = DB.expedientes.find((e) => e.id === expId);
+    if (!x) return;
+    x.avances = (x.avances || []).filter((v) => v.id !== avId);
+    if (!x.avances.some((v) => v.tipo === "cierre")) {
+      x.estadoEvento = "Abierto"; x.fechaCierre = null;
+    }
+    Store.commit();
+  };
+
+  // Etapa actual del expediente = último hito registrado (Paso 12).
+  Store.etapaExpediente = function (x) {
+    if (x.estadoEvento === "Cerrado") return C.ETAPAS_CORR.CERRADO;
+    const av = (x.avances || []).slice().sort(
+      (a, b) => (a.fechaReal || "").localeCompare(b.fechaReal || ""));
+    const ultimo = av[av.length - 1];
+    if (!ultimo) return C.ETAPAS_CORR.APERTURA;
+    switch (ultimo.tipo) {
+      case "envio_st": return C.ETAPAS_CORR.EN_ST;
+      case "retorno_st":
+        return (ultimo.datos && ultimo.datos.estadoEquipo === "Operativo")
+          ? C.ETAPAS_CORR.RETORNADO_OK : C.ETAPAS_CORR.RETORNADO_NOK;
+      case "cotizacion_solicitada":
+      case "cotizacion_recibida": return C.ETAPAS_CORR.COMPRA;
+      case "informe_tecnico":
+      case "oc_emitida": return C.ETAPAS_CORR.COMPRA;
+      case "oc_enviada": return C.ETAPAS_CORR.ESPERA;
+      case "visita_ejecucion": return C.ETAPAS_CORR.EJECUCION;
+      case "evaluacion": return C.ETAPAS_CORR.EVALUACION;
+      default: return C.ETAPAS_CORR.EVALUACION;
+    }
+  };
+
+  Store.diasCicloExpediente = function (x) {
+    const fin = x.fechaCierre || U.todayISO();
+    return U.daysBetween(x.fechaDocumento, fin);
+  };
+
+  /* =====================================================================
+   * Línea de tiempo unificada de eventos de estado por equipo (Paso 2/12)
+   * Devuelve eventos { fecha, estado, origen, detalle } ordenados.
+   * =================================================================== */
+  Store.eventosEstado = function (key) {
+    const eventos = [];
+    const eq = Store.equipoByKey(key);
+
+    // Mantenciones de la app
+    Store.mantencionesDe(key).forEach((m) => {
+      if (m.estadoEquipo) {
+        eventos.push({
+          fecha: m.fecha, estado: m.estadoEquipo, origen: "Preventivo (app)",
+          detalle: "Mantención " + (m.programacion || "") + " · " + (m.resultado || ""),
+        });
+      }
+    });
+
+    // Resultados de planilla con impacto en operatividad (FS/NU/Baja)
+    if (eq && eq.registro) {
+      C.MESES.forEach((mes) => {
+        const reg = eq.registro[mes.key];
+        if (!reg || !reg.resultado) return;
+        const r = reg.resultado;
+        let estado = null, detalle = "";
+        if (r === "FS") { estado = C.ESTADO.NO_OPERATIVO; detalle = "Fuera de Servicio (planilla)"; }
+        else if (r === "NU") { estado = C.ESTADO.NO_OPERATIVO; detalle = "No Ubicable (planilla)"; }
+        else if (r === "Baja") { estado = C.ESTADO.NO_OPERATIVO; detalle = "Dado de Baja (planilla)"; }
+        if (estado) {
+          eventos.push({
+            fecha: U.lastDayOfMonthISO(2026, mes.num), estado, origen: "Planilla",
+            detalle,
+          });
+        }
+      });
+    }
+
+    // Avances correctivos
+    Store.expedientesDe(key).forEach((x) => {
+      eventos.push({
+        fecha: x.fechaDocumento, estado: x.estadoEquipo,
+        origen: "Correctivo (apertura)", detalle: "Folio " + (x.folioSigem || ""),
+      });
+      (x.avances || []).forEach((a) => {
+        if (a.tipo === "envio_st") {
+          eventos.push({ fecha: a.fechaReal, estado: C.ESTADO.SERVICIO_TECNICO,
+            origen: "Correctivo", detalle: "Envío a servicio técnico" });
+        } else if (a.tipo === "retorno_st" || a.tipo === "visita_ejecucion") {
+          const est = (a.datos && a.datos.estadoEquipo) || C.ESTADO.OPERATIVO;
+          eventos.push({ fecha: a.fechaReal, estado: est,
+            origen: "Correctivo", detalle: a.tipo === "retorno_st" ? "Retorno servicio técnico" : "Visita / Ejecución" });
+        } else if (a.tipo === "cierre") {
+          eventos.push({ fecha: a.fechaReal, estado: x.estadoEquipo,
+            origen: "Correctivo", detalle: "Cierre del expediente" });
+        }
+      });
+    });
+
+    return eventos
+      .filter((e) => e.fecha && e.estado)
+      .sort((a, b) => (a.fecha || "").localeCompare(b.fecha || ""));
+  };
+
+  // Estado actual del equipo + días en estado + última actualización (Paso 2).
+  Store.estadoEquipo = function (key) {
+    const eventos = Store.eventosEstado(key);
+    if (!eventos.length) {
+      return { estado: C.ESTADO.OPERATIVO, desde: null, dias: null, asumido: true };
+    }
+    const ultimo = eventos[eventos.length - 1];
+    // Inicio de la racha del estado actual.
+    let desde = ultimo.fecha;
+    for (let i = eventos.length - 1; i >= 0; i--) {
+      if (eventos[i].estado === ultimo.estado) desde = eventos[i].fecha;
+      else break;
+    }
+    return {
+      estado: ultimo.estado,
+      desde,
+      dias: U.daysBetween(desde, U.todayISO()),
+      asumido: false,
+    };
+  };
+
+  Store.ultimaActualizacion = function (key) {
+    let max = null;
+    const upd = (iso) => { if (iso && (!max || iso > max)) max = iso; };
+    Store.mantencionesDe(key).forEach((m) => { upd(m.fecha); upd((m.createdAt || "").slice(0, 10)); });
+    Store.pendientesDe(key).forEach((p) => {
+      upd(p.fechaCompromiso);
+      (p.gestiones || []).forEach((g) => upd(g.fecha));
+      upd(p.fechaCompletado);
+    });
+    Store.expedientesDe(key).forEach((x) => {
+      upd(x.fechaDocumento); upd(x.fechaCierre);
+      (x.avances || []).forEach((a) => upd(a.fechaReal));
+    });
+    return max;
+  };
+
+  Store.pendientesAbiertosDe = function (key) {
+    return Store.pendientesDe(key).filter((p) => !p.fechaCompletado);
+  };
+
+})(window);
+
+
+/* ===== assets/js/core/ui.js ===== */
+/* =========================================================================
+ * MP 2026 · ui.js
+ * Componentes de interfaz reutilizables: toast, modal y DataTable
+ * (tabla tipo Excel con filtros por columna, búsqueda global, selector
+ *  de columnas, paginación y exportación).
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const UI = MP.ui = {};
+
+  /* ----- Toasts ------------------------------------------------------- */
+  UI.toast = function (msg, tipo) {
+    let cont = document.getElementById("toast-cont");
+    if (!cont) {
+      cont = el("div", { id: "toast-cont", class: "toast-cont" });
+      document.body.appendChild(cont);
+    }
+    const t = el("div", { class: "toast toast-" + (tipo || "info") }, msg);
+    cont.appendChild(t);
+    setTimeout(() => t.classList.add("show"), 10);
+    setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 3600);
+  };
+
+  /* ----- Modal -------------------------------------------------------- */
+  UI.modal = function (opts) {
+    opts = opts || {};
+    const overlay = el("div", { class: "modal-overlay" });
+    const box = el("div", { class: "modal-box " + (opts.size || "") });
+    const head = el("div", { class: "modal-head" }, [
+      el("h3", { text: opts.title || "" }),
+      el("button", { class: "modal-x", title: "Cerrar", onclick: close }, "✕"),
+    ]);
+    const body = el("div", { class: "modal-body" });
+    if (typeof opts.body === "string") body.innerHTML = opts.body;
+    else if (opts.body) body.appendChild(opts.body);
+    box.appendChild(head); box.appendChild(body);
+    if (opts.footer) {
+      const foot = el("div", { class: "modal-foot" });
+      (Array.isArray(opts.footer) ? opts.footer : [opts.footer]).forEach((f) => foot.appendChild(f));
+      box.appendChild(foot);
+    }
+    overlay.appendChild(box);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay && opts.dismissable !== false) close(); });
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+    function close() { overlay.remove(); document.body.style.overflow = ""; if (opts.onClose) opts.onClose(); }
+    const api = { close, overlay, body };
+    return api;
+  };
+
+  UI.confirm = function (msg, onYes, opts) {
+    opts = opts || {};
+    const m = UI.modal({
+      title: opts.title || "Confirmar",
+      size: "sm",
+      body: el("p", { class: "confirm-msg", html: msg }),
+      footer: [
+        el("button", { class: "btn ghost", onclick: () => m.close() }, opts.cancelText || "Cancelar"),
+        el("button", { class: "btn " + (opts.danger ? "danger" : "primary"),
+          onclick: () => { m.close(); onYes && onYes(); } }, opts.okText || "Confirmar"),
+      ],
+    });
+    return m;
+  };
+
+  /* ----- Botón utilitario -------------------------------------------- */
+  UI.btn = function (label, cls, onClick, attrs) {
+    return el("button", Object.assign({ class: "btn " + (cls || ""), onclick: onClick }, attrs || {}), label);
+  };
+
+  /* =====================================================================
+   * DataTable — tabla tipo Excel reutilizable.
+   *
+   * config = {
+   *   columns: [{ key, label, group?, render?(row,val), value?(row),
+   *               filterable=true, sortable=true, defaultVisible=true,
+   *               className?, align? }],
+   *   rows: [...objetos],
+   *   rowClass?: (row)=>string,
+   *   onRowClick?: (row)=>void,
+   *   pageSize?: number (def 25),
+   *   exportName?: string,
+   *   storageKey?: string  (recuerda columnas visibles)
+   *   toolbarExtra?: [DOMNode]  (botones extra a la izquierda)
+   *   emptyText?: string
+   * }
+   * ===================================================================== */
+  UI.DataTable = function (config) {
+    const cols = config.columns.map((c) => Object.assign({
+      filterable: true, sortable: true, defaultVisible: true,
+    }, c));
+    const state = {
+      rows: config.rows || [],
+      filters: {},          // key -> Set de valores permitidos
+      sort: { key: null, dir: 1 },
+      page: 1,
+      pageSize: config.pageSize || 25,
+      search: "",
+      visible: {},
+    };
+    // Visibilidad inicial (persistida si hay storageKey).
+    cols.forEach((c) => { state.visible[c.key] = c.defaultVisible !== false; });
+    if (config.storageKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("dt_cols_" + config.storageKey) || "null");
+        if (saved) cols.forEach((c) => { if (c.key in saved) state.visible[c.key] = saved[c.key]; });
+      } catch (e) {}
+    }
+
+    const root = el("div", { class: "dt" });
+
+    function valueOf(row, c) {
+      const v = c.value ? c.value(row) : row[c.key];
+      return v === null || v === undefined ? "" : v;
+    }
+    function displayText(row, c) {
+      // Texto plano para búsqueda/filtros (no HTML).
+      if (c.text) return U.asText(c.text(row));
+      return U.asText(valueOf(row, c));
+    }
+
+    function filteredRows() {
+      let rows = state.rows.slice();
+      // Filtros por columna
+      Object.keys(state.filters).forEach((k) => {
+        const set = state.filters[k];
+        if (!set || set.size === 0) return;
+        const c = cols.find((x) => x.key === k);
+        rows = rows.filter((r) => set.has(displayText(r, c)));
+      });
+      // Búsqueda global
+      const q = U.norm(state.search);
+      if (q) {
+        rows = rows.filter((r) =>
+          cols.some((c) => U.norm(displayText(r, c)).indexOf(q) >= 0));
+      }
+      // Orden
+      if (state.sort.key) {
+        const c = cols.find((x) => x.key === state.sort.key);
+        rows.sort((a, b) => {
+          const va = displayText(a, c), vb = displayText(b, c);
+          const na = parseFloat(va), nb = parseFloat(vb);
+          let cmp;
+          if (!isNaN(na) && !isNaN(nb) && va.trim() !== "" && vb.trim() !== "") cmp = na - nb;
+          else cmp = va.localeCompare(vb, "es", { numeric: true });
+          return cmp * state.sort.dir;
+        });
+      }
+      return rows;
+    }
+
+    let lastFiltered = [];
+
+    function render() {
+      root.innerHTML = "";
+      const visibleCols = cols.filter((c) => state.visible[c.key]);
+      const rows = filteredRows();
+      lastFiltered = rows;
+
+      /* Toolbar */
+      const toolbar = el("div", { class: "dt-toolbar" });
+      (config.toolbarExtra || []).forEach((n) => toolbar.appendChild(n));
+      const search = el("input", { class: "dt-search", type: "search",
+        placeholder: "🔍 Búsqueda global…", value: state.search });
+      // Re-renderiza y restaura el foco/caret para no perder la escritura
+      // continua (la tabla se reconstruye en cada tecla).
+      search.addEventListener("input", () => {
+        state.search = search.value; state.page = 1;
+        render();
+        const fresh = root.querySelector(".dt-search");
+        if (fresh) { fresh.focus(); const n = fresh.value.length; try { fresh.setSelectionRange(n, n); } catch (e) {} }
+      });
+      toolbar.appendChild(search);
+
+      const count = el("span", { class: "dt-count" },
+        rows.length + " de " + state.rows.length + " registros");
+      toolbar.appendChild(count);
+
+      const spacer = el("span", { class: "dt-spacer" });
+      toolbar.appendChild(spacer);
+
+      // Selector de columnas
+      const colBtn = UI.btn("⚙ Columnas", "ghost sm", (e) => openColChooser(e.currentTarget));
+      toolbar.appendChild(colBtn);
+
+      // Exportar
+      if (config.exportName !== false) {
+        toolbar.appendChild(UI.btn("⬇ Exportar", "ghost sm", () => {
+          MP.excel.exportTable(visibleCols, rows, displayText, config.exportName || "tabla");
+        }));
+      }
+      // Limpiar filtros
+      toolbar.appendChild(UI.btn("✕ Limpiar", "ghost sm", () => {
+        state.filters = {}; state.search = ""; state.sort = { key: null, dir: 1 }; state.page = 1; render();
+      }));
+
+      root.appendChild(toolbar);
+
+      /* Tabla */
+      const wrap = el("div", { class: "dt-scroll" });
+      const table = el("table", { class: "dt-table" });
+
+      // ¿Hay grupos? (para Plan de Mantenimiento con meses)
+      const hasGroups = visibleCols.some((c) => c.group);
+      const thead = el("thead");
+      if (hasGroups) {
+        const trG = el("tr", { class: "dt-grouprow" });
+        let i = 0;
+        while (i < visibleCols.length) {
+          const g = visibleCols[i].group || null;
+          let span = 1;
+          while (i + span < visibleCols.length && (visibleCols[i + span].group || null) === g) span++;
+          trG.appendChild(el("th", { colspan: span, class: g ? "dt-group" : "" }, g || ""));
+          i += span;
+        }
+        thead.appendChild(trG);
+      }
+
+      const trH = el("tr");
+      visibleCols.forEach((c) => {
+        const th = el("th", { class: (c.className || "") + (c.align ? " ta-" + c.align : "") });
+        const wrapTh = el("div", { class: "th-inner" });
+        const lab = el("span", { class: "th-label", text: c.label });
+        if (c.sortable) {
+          lab.style.cursor = "pointer";
+          lab.addEventListener("click", () => {
+            if (state.sort.key === c.key) state.sort.dir *= -1;
+            else { state.sort.key = c.key; state.sort.dir = 1; }
+            render();
+          });
+          if (state.sort.key === c.key) lab.textContent += state.sort.dir > 0 ? " ▲" : " ▼";
+        }
+        wrapTh.appendChild(lab);
+        if (c.filterable) {
+          const active = state.filters[c.key] && state.filters[c.key].size > 0;
+          const fb = el("button", { class: "th-filter" + (active ? " active" : ""), title: "Filtrar" }, "▾");
+          fb.addEventListener("click", (e) => { e.stopPropagation(); openColFilter(c, fb); });
+          wrapTh.appendChild(fb);
+        }
+        th.appendChild(wrapTh);
+        trH.appendChild(th);
+      });
+      thead.appendChild(trH);
+      table.appendChild(thead);
+
+      const tbody = el("tbody");
+      const start = (state.page - 1) * state.pageSize;
+      const pageRows = rows.slice(start, start + state.pageSize);
+      if (pageRows.length === 0) {
+        tbody.appendChild(el("tr", {}, el("td", { colspan: visibleCols.length, class: "dt-empty" },
+          config.emptyText || "Sin registros que coincidan con los filtros.")));
+      }
+      pageRows.forEach((row) => {
+        const tr = el("tr", { class: config.rowClass ? config.rowClass(row) : "" });
+        if (config.onRowClick) {
+          tr.classList.add("clickable");
+          tr.addEventListener("click", (e) => {
+            if (e.target.closest(".no-rowclick")) return;
+            config.onRowClick(row);
+          });
+        }
+        visibleCols.forEach((c) => {
+          const td = el("td", { class: (c.className || "") + (c.align ? " ta-" + c.align : "") });
+          const content = c.render ? c.render(row, valueOf(row, c)) : valueOf(row, c);
+          if (content instanceof Node) td.appendChild(content);
+          else if (c.html) td.innerHTML = c.html(row);
+          else td.textContent = U.asText(content);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      root.appendChild(wrap);
+
+      /* Paginación */
+      const totalPages = Math.max(1, Math.ceil(rows.length / state.pageSize));
+      if (state.page > totalPages) state.page = totalPages;
+      const pag = el("div", { class: "dt-pag" });
+      pag.appendChild(UI.btn("«", "ghost sm", () => { state.page = 1; render(); }, { disabled: state.page === 1 }));
+      pag.appendChild(UI.btn("‹", "ghost sm", () => { state.page = Math.max(1, state.page - 1); render(); }, { disabled: state.page === 1 }));
+      pag.appendChild(el("span", { class: "dt-pageinfo" }, "Página " + state.page + " / " + totalPages));
+      pag.appendChild(UI.btn("›", "ghost sm", () => { state.page = Math.min(totalPages, state.page + 1); render(); }, { disabled: state.page === totalPages }));
+      pag.appendChild(UI.btn("»", "ghost sm", () => { state.page = totalPages; render(); }, { disabled: state.page === totalPages }));
+      const sizeSel = el("select", { class: "dt-pagesize" },
+        [10, 25, 50, 100, 250].map((n) => el("option", { value: n, selected: n === state.pageSize }, n + " / pág.")));
+      sizeSel.addEventListener("change", () => { state.pageSize = +sizeSel.value; state.page = 1; render(); });
+      pag.appendChild(sizeSel);
+      root.appendChild(pag);
+    }
+
+    /* ----- Popover de filtro de columna (estilo Excel) --------------- */
+    function openColFilter(c, anchor) {
+      closePopovers();
+      const distinct = Array.from(new Set(state.rows.map((r) => displayText(r, c))))
+        .sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+      const current = state.filters[c.key] || new Set(distinct);
+      const pop = el("div", { class: "dt-pop" });
+      pop.addEventListener("click", (e) => e.stopPropagation());
+
+      // Orden
+      const ord = el("div", { class: "dt-pop-sort" }, [
+        UI.btn("▲ Orden A→Z", "ghost sm", () => { state.sort = { key: c.key, dir: 1 }; closePopovers(); render(); }),
+        UI.btn("▼ Orden Z→A", "ghost sm", () => { state.sort = { key: c.key, dir: -1 }; closePopovers(); render(); }),
+      ]);
+      pop.appendChild(ord);
+
+      const sb = el("input", { class: "dt-pop-search", type: "search", placeholder: "Buscar valor…" });
+      pop.appendChild(sb);
+
+      const list = el("div", { class: "dt-pop-list" });
+      const selectAll = el("label", { class: "dt-pop-item all" }, [
+        (() => { const cb = el("input", { type: "checkbox" }); cb.checked = current.size === distinct.length;
+          cb.addEventListener("change", () => {
+            list.querySelectorAll("input[data-v]").forEach((i) => {
+              if (i.parentElement.style.display !== "none") i.checked = cb.checked;
+            });
+          }); return cb; })(),
+        el("span", {}, "(Seleccionar todo)"),
+      ]);
+      list.appendChild(selectAll);
+      distinct.forEach((v) => {
+        const cb = el("input", { type: "checkbox", "data-v": v });
+        cb.checked = current.has(v);
+        list.appendChild(el("label", { class: "dt-pop-item" }, [cb, el("span", {}, v === "" ? "(vacío)" : v)]));
+      });
+      sb.addEventListener("input", () => {
+        const q = U.norm(sb.value);
+        list.querySelectorAll(".dt-pop-item:not(.all)").forEach((it) => {
+          it.style.display = U.norm(it.textContent).indexOf(q) >= 0 ? "" : "none";
+        });
+      });
+      pop.appendChild(list);
+
+      const foot = el("div", { class: "dt-pop-foot" }, [
+        UI.btn("Aplicar", "primary sm", () => {
+          const chosen = new Set();
+          list.querySelectorAll("input[data-v]").forEach((i) => { if (i.checked) chosen.add(i.getAttribute("data-v")); });
+          if (chosen.size === distinct.length) delete state.filters[c.key];
+          else state.filters[c.key] = chosen;
+          state.page = 1; closePopovers(); render();
+        }),
+        UI.btn("Quitar filtro", "ghost sm", () => { delete state.filters[c.key]; closePopovers(); render(); }),
+      ]);
+      pop.appendChild(foot);
+
+      document.body.appendChild(pop);
+      positionPop(pop, anchor);
+    }
+
+    function openColChooser(anchor) {
+      closePopovers();
+      const pop = el("div", { class: "dt-pop" });
+      pop.addEventListener("click", (e) => e.stopPropagation());
+      pop.appendChild(el("div", { class: "dt-pop-title" }, "Columnas visibles"));
+      const list = el("div", { class: "dt-pop-list" });
+      cols.forEach((c) => {
+        const cb = el("input", { type: "checkbox" });
+        cb.checked = state.visible[c.key];
+        cb.addEventListener("change", () => {
+          state.visible[c.key] = cb.checked;
+          if (config.storageKey) localStorage.setItem("dt_cols_" + config.storageKey, JSON.stringify(state.visible));
+        });
+        list.appendChild(el("label", { class: "dt-pop-item" }, [cb, el("span", {}, c.label)]));
+      });
+      pop.appendChild(list);
+      pop.appendChild(el("div", { class: "dt-pop-foot" }, [
+        UI.btn("Aplicar", "primary sm", () => { closePopovers(); render(); }),
+      ]));
+      document.body.appendChild(pop);
+      positionPop(pop, anchor);
+    }
+
+    function positionPop(pop, anchor) {
+      const r = anchor.getBoundingClientRect();
+      pop.style.position = "fixed";
+      pop.style.top = Math.min(r.bottom + 4, window.innerHeight - 360) + "px";
+      pop.style.left = Math.min(r.left, window.innerWidth - 280) + "px";
+      setTimeout(() => document.addEventListener("click", closePopovers, { once: true }), 0);
+    }
+    function closePopovers() {
+      document.querySelectorAll(".dt-pop").forEach((p) => p.remove());
+    }
+
+    render();
+    return {
+      root,
+      setRows(rows) { state.rows = rows; state.page = 1; render(); },
+      getFiltered() { return lastFiltered; },
+      refresh: render,
+    };
+  };
+
+})(window);
+
+
+/* ===== assets/js/core/excel.js ===== */
+/* =========================================================================
+ * MP 2026 · excel.js
+ * Importación de la planilla (Pasos 1, 3, 4) y exportaciones (Paso 11).
+ * Usa SheetJS (XLSX) cargado vía CDN. Si no está disponible, las
+ * funciones de importación se deshabilitan con aviso (degradación elegante).
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+  const Store = MP.store;
+  const Excel = MP.excel = {};
+
+  Excel.disponible = function () { return typeof global.XLSX !== "undefined"; };
+
+  // Índice de columna (letra → 0-based). "B"->1, "AE"->30
+  function colIdx(letter) {
+    let n = 0;
+    for (let i = 0; i < letter.length; i++) n = n * 26 + (letter.charCodeAt(i) - 64);
+    return n - 1;
+  }
+
+  // Lee celda de una fila (array) por letra de columna.
+  function cell(row, letter) {
+    const v = row[colIdx(letter)];
+    return v === undefined || v === null ? "" : v;
+  }
+
+  /* ----- Mapeo de meses ↔ columnas (Pasos 3 y 4) --------------------- */
+  // PMP_2026 programación: T–AE (un valor por mes)
+  const PMP_MES_COLS = ["T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"];
+  // Registro_MP-2026: cada mes ocupa dos columnas (Programa P, Resultado R)
+  const REG_MES_COLS = [
+    { p: "T", r: "U" }, { p: "V", r: "W" }, { p: "X", r: "Y" }, { p: "Z", r: "AA" },
+    { p: "AB", r: "AC" }, { p: "AD", r: "AE" }, { p: "AF", r: "AG" }, { p: "AH", r: "AI" },
+    { p: "AJ", r: "AK" }, { p: "AL", r: "AM" }, { p: "AN", r: "AO" }, { p: "AP", r: "AQ" },
+  ];
+
+  function normPrograma(v) {
+    const s = U.asText(v).toUpperCase();
+    return C.PROGRAMA_VALIDOS.includes(s) ? s : "";
+  }
+  function normResultado(v) {
+    let s = U.asText(v);
+    // Normaliza variantes comunes de "Si" y "Si-RA".
+    const up = s.toUpperCase();
+    if (up === "SI") return "Si";
+    if (up === "SI-RA" || up === "SIRA") return "Si-RA";
+    if (C.RESULTADO_VALIDOS.includes(s)) return s;
+    // case-insensitive match
+    const m = C.RESULTADO_VALIDOS.find((x) => x.toUpperCase() === up);
+    return m || "";
+  }
+
+  /* =====================================================================
+   * Importar planilla completa.
+   * Lee la hoja PMP_2026 (equipos + programación) y, si existe,
+   * Registro_MP-2026 (programa/resultado por mes).
+   * ===================================================================== */
+  Excel.importarPlanilla = function (arrayBuffer) {
+    if (!Excel.disponible()) throw new Error("La librería de Excel (SheetJS) no está disponible. Conéctese a internet o use la importación por respaldo JSON.");
+    const wb = global.XLSX.read(arrayBuffer, { type: "array" });
+
+    const hojaPMP = encontrarHoja(wb, ["PMP_2026", "PMP 2026", "PMP", "Programación", "Programacion"]);
+    if (!hojaPMP) throw new Error("No se encontró la hoja PMP_2026 en el archivo.");
+
+    const rows = global.XLSX.utils.sheet_to_json(wb.Sheets[hojaPMP], {
+      header: 1, raw: false, defval: "", blankrows: false,
+    });
+
+    // Encabezados fila 7 (índice 6); datos desde fila 8 (índice 7).
+    const equipos = [];
+    let id = 0;
+    for (let i = 7; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || row.length === 0) continue;
+      // Saltar filas totalmente vacías en el bloque de datos.
+      const equipoNombre = U.asText(cell(row, "E"));
+      const serie = U.asText(cell(row, "L"));
+      const inv = U.asText(cell(row, "D"));
+      if (!equipoNombre && !serie && !inv) continue;
+
+      id++;
+      const eq = {
+        id: id,
+        nCarpeta: U.asText(cell(row, "C")),
+        nInventario: inv,                       // texto, ceros a la izq.
+        equipo: equipoNombre,
+        servicio: U.asText(cell(row, "F")),
+        unidad: U.asText(cell(row, "G")),
+        ubicacion: U.asText(cell(row, "H")),
+        procedencia: U.asText(cell(row, "I")),
+        marca: U.asText(cell(row, "J")),
+        modelo: U.asText(cell(row, "K")),
+        serie: serie,                           // texto, ceros a la izq.
+        anioInstalacion: U.asText(cell(row, "M")),
+        vidaUtilResidual: U.asText(cell(row, "N")),
+        clasificacion: U.asText(cell(row, "O")),
+        enuBaja: U.asText(cell(row, "P")),
+        programacion: {},
+        registro: {},
+      };
+      // Programación por mes (T–AE) — Paso 3
+      C.MESES.forEach((mes, idx) => {
+        const v = normPrograma(cell(row, PMP_MES_COLS[idx]));
+        if (v) eq.programacion[mes.key] = v;
+      });
+      equipos.push(eq);
+    }
+
+    if (equipos.length === 0) throw new Error("No se leyeron equipos. Verifique que los datos estén desde la fila 8.");
+
+    // Hoja de registro (opcional)
+    const hojaReg = encontrarHoja(wb, ["Registro_MP-2026", "Registro_MP_2026", "Registro MP 2026", "Registro", "Registro_MP"]);
+    let registrosLeidos = 0;
+    if (hojaReg) {
+      const rrows = global.XLSX.utils.sheet_to_json(wb.Sheets[hojaReg], {
+        header: 1, raw: false, defval: "", blankrows: false,
+      });
+      const porSerie = {}, porInv = {};
+      equipos.forEach((e) => {
+        if (e.serie) porSerie[e.serie] = e;
+        if (e.nInventario) porInv[e.nInventario] = e;
+      });
+      for (let i = 7; i < rrows.length; i++) {
+        const row = rrows[i];
+        if (!row || row.length === 0) continue;
+        const serie = U.asText(cell(row, "L"));
+        const inv = U.asText(cell(row, "D"));
+        const eq = porSerie[serie] || porInv[inv];
+        if (!eq) continue;
+        REG_MES_COLS.forEach((mc, idx) => {
+          const p = normPrograma(cell(row, mc.p));
+          const r = normResultado(cell(row, mc.r));
+          if (p || r) {
+            eq.registro[C.MESES[idx].key] = { programa: p, resultado: r };
+            registrosLeidos++;
+          }
+        });
+        const obs = U.asText(cell(row, "AR"));
+        if (obs) eq.observacionPlanilla = obs;
+      }
+    }
+
+    // Reconciliación Oficial/Borrador (Paso 4): borradores que reaparecen
+    // en la planilla recargada pasan a Oficial.
+    reconciliarBorradores(equipos);
+
+    Store.db.equipos = equipos;
+    Store.db.meta.ultimaCarga = new Date().toISOString();
+    if (!Store.db.meta.creado) Store.db.meta.creado = new Date().toISOString();
+    Store.commit();
+
+    return { equipos: equipos.length, registros: registrosLeidos, conRegistro: !!hojaReg };
+  };
+
+  function reconciliarBorradores(equiposNuevos) {
+    const idx = {};
+    equiposNuevos.forEach((e) => {
+      const k = U.equipoKey(e);
+      idx[k] = e;
+    });
+    Store.db.mantenciones.forEach((m) => {
+      if (m.tipoRegistro !== "Borrador") return;
+      const eq = idx[m.equipoKey];
+      if (!eq) return;
+      const mesKey = U.mesKeyFromISO(m.fecha);
+      const reg = eq.registro[mesKey];
+      if (reg && (reg.programa || reg.resultado)) {
+        m.tipoRegistro = "Oficial"; // pasó a estar en la planilla
+      }
+    });
+  }
+
+  function encontrarHoja(wb, candidatos) {
+    const nombres = wb.SheetNames;
+    for (const c of candidatos) {
+      const hit = nombres.find((n) => n.trim().toLowerCase() === c.trim().toLowerCase());
+      if (hit) return hit;
+    }
+    // coincidencia parcial
+    for (const c of candidatos) {
+      const hit = nombres.find((n) => U.norm(n).indexOf(U.norm(c)) >= 0);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  /* =====================================================================
+   * Exportaciones (Paso 11)
+   * ===================================================================== */
+  // Marca las columnas que deben conservar ceros a la izquierda como texto.
+  function aoaToSheetConTexto(aoa, colsTexto) {
+    const ws = global.XLSX.utils.aoa_to_sheet(aoa);
+    // Forzar formato texto en columnas indicadas (índices 0-based).
+    const range = global.XLSX.utils.decode_range(ws["!ref"]);
+    (colsTexto || []).forEach((ci) => {
+      for (let r = 1; r <= range.e.r; r++) {
+        const addr = global.XLSX.utils.encode_cell({ r, c: ci });
+        const cellRef = ws[addr];
+        if (cellRef) { cellRef.t = "s"; cellRef.z = "@"; cellRef.v = U.asText(cellRef.v); }
+      }
+    });
+    return ws;
+  }
+
+  // Exporta una DataTable genérica (columnas visibles, filas filtradas).
+  Excel.exportTable = function (visibleCols, rows, displayText, nombre) {
+    if (!Excel.disponible()) { MP.ui.toast("Excel no disponible (sin conexión a SheetJS).", "warn"); return; }
+    const header = visibleCols.map((c) => c.group ? (c.group + " · " + c.label) : c.label);
+    const aoa = [header];
+    rows.forEach((r) => aoa.push(visibleCols.map((c) => displayText(r, c))));
+    // columnas texto: serie / inventario
+    const colsTexto = [];
+    visibleCols.forEach((c, i) => {
+      if (/serie|inventario/i.test(c.key) || /serie|inventario/i.test(c.label)) colsTexto.push(i);
+    });
+    const ws = aoaToSheetConTexto(aoa, colsTexto);
+    const wb = global.XLSX.utils.book_new();
+    global.XLSX.utils.book_append_sheet(wb, ws, "Datos");
+    global.XLSX.writeFile(wb, (nombre || "export") + "_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Exportado: " + (nombre || "export") + "_" + U.todayISO() + ".xlsx", "ok");
+  };
+
+  // Descargar todos los registros (Paso 11) — un libro con varias hojas.
+  Excel.descargarTodo = function () {
+    if (!Excel.disponible()) { MP.ui.toast("Excel no disponible (sin conexión a SheetJS).", "warn"); return; }
+    const wb = global.XLSX.utils.book_new();
+
+    // Hoja Equipos
+    const eqHead = ["ID", "N° Carpeta", "N° Inventario", "Equipo", "Servicio", "Unidad",
+      "Ubicación", "Procedencia", "Marca", "Modelo", "Serie", "Año Instalación",
+      "Vida Útil Residual", "Clasificación", "ENU/Baja"];
+    const eqAoa = [eqHead];
+    Store.db.equipos.forEach((e) => eqAoa.push([
+      e.id, e.nCarpeta, e.nInventario, e.equipo, e.servicio, e.unidad, e.ubicacion,
+      e.procedencia, e.marca, e.modelo, e.serie, e.anioInstalacion, e.vidaUtilResidual,
+      e.clasificacion, e.enuBaja,
+    ]));
+    global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(eqAoa, [2, 10]), "Equipos");
+
+    // Hoja Mantenciones (app)
+    const mHead = ["Equipo", "Serie", "N° Inventario", "Fecha", "Mes", "Programación",
+      "Ejecutor", "Resultado", "Estado equipo", "Tipo registro", "Observaciones"];
+    const mAoa = [mHead];
+    Store.db.mantenciones.forEach((m) => {
+      const eq = Store.equipoByKey(m.equipoKey) || {};
+      mAoa.push([eq.equipo || "", eq.serie || "", eq.nInventario || "", m.fecha,
+        U.mesNombre(U.mesKeyFromISO(m.fecha)), m.programacion, m.ejecutor, m.resultado,
+        m.estadoEquipo, m.tipoRegistro, m.observaciones]);
+    });
+    global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(mAoa, [1, 2]), "Mantenciones");
+
+    // Hoja Pendientes
+    const pHead = ["Equipo", "Serie", "N° Inventario", "Tipo", "Estado", "Urgencia",
+      "Compromiso", "Días atraso", "Responsable Admin.", "Responsable Ejec.", "Descripción", "Completado"];
+    const pAoa = [pHead];
+    Store.db.pendientes.forEach((p) => {
+      const eq = Store.equipoByKey(p.equipoKey) || {};
+      pAoa.push([eq.equipo || "", eq.serie || "", eq.nInventario || "", p.tipo,
+        Store.estadoPendiente(p), Store.urgenciaPendiente(p), p.fechaCompromiso,
+        Store.diasAtraso(p), p.responsableAdmin, p.responsableEjecutivo, p.descripcion,
+        p.fechaCompletado || ""]);
+    });
+    global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(pAoa, [1, 2]), "Pendientes");
+
+    // Hoja Correctivo
+    const cHead = ["Folio SIGEM", "Equipo", "Serie", "N° Inventario", "Tipo", "Fecha documento",
+      "Técnico", "Etapa", "Estado evento", "Fecha cierre", "Días ciclo"];
+    const cAoa = [cHead];
+    Store.db.expedientes.forEach((x) => {
+      const eq = Store.equipoByKey(x.equipoKey) || {};
+      cAoa.push([x.folioSigem, eq.equipo || "", eq.serie || "", eq.nInventario || "",
+        x.tipoEvento, x.fechaDocumento, x.tecnico, Store.etapaExpediente(x), x.estadoEvento,
+        x.fechaCierre || "", Store.diasCicloExpediente(x)]);
+    });
+    global.XLSX.utils.book_append_sheet(wb, aoaToSheetConTexto(cAoa, [2, 3]), "Correctivo");
+
+    global.XLSX.writeFile(wb, "Registros_MP2026_" + U.todayISO() + ".xlsx");
+    MP.ui.toast("📄 Registros descargados: Registros_MP2026_" + U.todayISO() + ".xlsx", "ok");
+  };
+
+})(window);
+
+
+/* ===== assets/js/core/seed.js ===== */
+/* =========================================================================
+ * MP 2026 · seed.js
+ * Datos de demostración que simulan escenarios reales de un hospital,
+ * para poder probar el flujo completo sin cargar una planilla.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const Store = MP.store;
+
+  function eq(o) {
+    return Object.assign({
+      programacion: {}, registro: {},
+      nCarpeta: "", procedencia: "Compra", anioInstalacion: "", vidaUtilResidual: "",
+      clasificacion: "Crítico", enuBaja: "",
+    }, o);
+  }
+
+  MP.seed = function () {
+    const equipos = [
+      eq({ id: 1, nCarpeta: "C-001", nInventario: "00039", equipo: "Ventilador Mecánico", servicio: "UCI Adulto",
+        unidad: "Cama 3", ubicacion: "3er piso", marca: "Dräger", modelo: "Evita V500", serie: "ASKB-0021",
+        anioInstalacion: "2019", vidaUtilResidual: "4", clasificacion: "Crítico",
+        programacion: { ene: "X", abr: "X", jul: "X", oct: "X" },
+        registro: { ene: { programa: "X", resultado: "Si" }, abr: { programa: "X", resultado: "C3" } } }),
+      eq({ id: 2, nCarpeta: "C-002", nInventario: "00104", equipo: "Monitor de Signos Vitales", servicio: "UCI Adulto",
+        unidad: "Cama 5", ubicacion: "3er piso", marca: "Philips", modelo: "IntelliVue MX450", serie: "DE-00782",
+        anioInstalacion: "2021", vidaUtilResidual: "6", clasificacion: "Crítico",
+        programacion: { feb: "X", may: "X", ago: "X", nov: "X" },
+        registro: { feb: { programa: "X", resultado: "Si" }, may: { programa: "X", resultado: "Si" } } }),
+      eq({ id: 3, nCarpeta: "C-003", nInventario: "00210", equipo: "Bomba de Infusión", servicio: "Pabellón Central",
+        unidad: "Quirófano 2", ubicacion: "2do piso", marca: "B. Braun", modelo: "Infusomat Space", serie: "BBR-1187",
+        anioInstalacion: "2018", vidaUtilResidual: "3", clasificacion: "Crítico",
+        programacion: { mar: "X", sep: "X" },
+        registro: { mar: { programa: "X", resultado: "C2" } } }),
+      eq({ id: 4, nCarpeta: "C-004", nInventario: "00311", equipo: "Desfibrilador", servicio: "Urgencias",
+        unidad: "Reanimación", ubicacion: "1er piso", marca: "Zoll", modelo: "R Series", serie: "ZOL-0455",
+        anioInstalacion: "2020", vidaUtilResidual: "5", clasificacion: "Crítico",
+        programacion: { ene: "X", jul: "X" },
+        registro: { ene: { programa: "X", resultado: "Si" } } }),
+      eq({ id: 5, nCarpeta: "C-005", nInventario: "00420", equipo: "Electrocardiógrafo", servicio: "Cardiología",
+        unidad: "Box 4", ubicacion: "2do piso", marca: "GE", modelo: "MAC 2000", serie: "GE-90112",
+        anioInstalacion: "2017", vidaUtilResidual: "2", clasificacion: "No crítico",
+        programacion: { abr: "X", oct: "X" },
+        registro: { abr: { programa: "X", resultado: "NU" } } }),
+      eq({ id: 6, nCarpeta: "C-006", nInventario: "00501", equipo: "Incubadora Neonatal", servicio: "Neonatología",
+        unidad: "UCIN Cama 1", ubicacion: "4to piso", marca: "Atom", modelo: "Incu i", serie: "ATM-0033",
+        anioInstalacion: "2022", vidaUtilResidual: "8", clasificacion: "Crítico",
+        programacion: { mar: "X", jun: "X", sep: "X", dic: "X" },
+        registro: { mar: { programa: "X", resultado: "Si" }, jun: { programa: "X", resultado: "Si" } } }),
+      eq({ id: 7, nCarpeta: "C-007", nInventario: "00615", equipo: "Máquina de Anestesia", servicio: "Pabellón Central",
+        unidad: "Quirófano 1", ubicacion: "2do piso", marca: "Dräger", modelo: "Fabius Plus", serie: "ASKD-1190",
+        anioInstalacion: "2016", vidaUtilResidual: "1", clasificacion: "Crítico",
+        programacion: { feb: "X", ago: "X" },
+        registro: { feb: { programa: "X", resultado: "FS" } } }),
+      eq({ id: 8, nCarpeta: "C-008", nInventario: "00702", equipo: "Ecógrafo", servicio: "Imagenología",
+        unidad: "Sala Eco 1", ubicacion: "1er piso", marca: "Mindray", modelo: "DC-70", serie: "MDR-2204",
+        anioInstalacion: "2021", vidaUtilResidual: "7", clasificacion: "No crítico",
+        programacion: { may: "X", nov: "X" }, registro: {} }),
+      eq({ id: 9, nCarpeta: "C-009", nInventario: "00810", equipo: "Bomba de Infusión", servicio: "Medicina Interna",
+        unidad: "Cama 12", ubicacion: "5to piso", marca: "B. Braun", modelo: "Perfusor Space", serie: "BBR-2290",
+        anioInstalacion: "2019", vidaUtilResidual: "4", clasificacion: "Crítico",
+        programacion: { ene: "X", jul: "X" },
+        registro: { ene: { programa: "X", resultado: "Si" } } }),
+      eq({ id: 10, nCarpeta: "C-010", nInventario: "00915", equipo: "Aspirador de Secreciones", servicio: "Urgencias",
+        unidad: "Box 2", ubicacion: "1er piso", marca: "Cami", modelo: "Aspeed", serie: "CAM-0078",
+        anioInstalacion: "2015", vidaUtilResidual: "0", clasificacion: "No crítico", enuBaja: "ENU",
+        programacion: { jun: "X" }, registro: {} }),
+    ];
+
+    Store.db.equipos = equipos;
+    Store.db.meta = { creado: new Date().toISOString(), ultimaCarga: null, demo: true };
+
+    const k = (serie) => "S:" + serie;
+
+    // Mantenciones registradas en la app (Paso 8)
+    Store.db.mantenciones = [
+      { id: U.uid("mant"), equipoKey: k("DE-00782"), fecha: "2026-05-12", programacion: "X",
+        ejecutor: "Cristina Rozas Urrutia", resultado: "Si", observaciones: "Sin novedades.",
+        estadoEquipo: "Operativo", gestionPendiente: false, tipoRegistro: "Oficial",
+        createdAt: "2026-05-12T10:00:00Z" },
+      { id: U.uid("mant"), equipoKey: k("ATM-0033"), fecha: "2026-06-04", programacion: "X",
+        ejecutor: "Daniel Díaz Neira", resultado: "Si", observaciones: "Calibración OK.",
+        estadoEquipo: "Operativo", gestionPendiente: false, tipoRegistro: "Borrador",
+        createdAt: "2026-06-04T09:30:00Z" },
+      { id: U.uid("mant"), equipoKey: k("BBR-1187"), fecha: "2026-03-20", programacion: "X",
+        ejecutor: "Marco Ulloa", resultado: "C2", observaciones: "Equipo en servicio técnico, se reprograma al reintegro.",
+        estadoEquipo: "No Operativo", gestionPendiente: true, tipoRegistro: "Oficial",
+        createdAt: "2026-03-20T11:00:00Z", _pendienteGenerado: true },
+    ];
+
+    // Pendientes (Paso 9) — incluye uno atrasado y uno en espera
+    Store.db.pendientes = [
+      { id: U.uid("pend"), equipoKey: k("BBR-1187"), fechaCompromiso: "2026-06-10",
+        tipo: "Reprogramación Mantención Preventiva",
+        descripcion: "Reprogramar MP al reintegro del equipo desde servicio técnico (C2).",
+        tareas: [{ texto: "Confirmar retorno del equipo", hecha: true }, { texto: "Agendar nueva fecha de MP", hecha: false }],
+        responsableAdmin: "Cristián Beltrán Oviedo", responsableEjecutivo: "Marco Ulloa",
+        gestiones: [{ fecha: "2026-04-01", texto: "Se contacta a servicio técnico para estado.", ts: "2026-04-01T12:00:00Z" }],
+        enEspera: null, fechaCompletado: null, origen: "preventivo", createdAt: "2026-03-20T11:05:00Z" },
+      { id: U.uid("pend"), equipoKey: k("GE-90112"), fechaCompromiso: "2026-06-20",
+        tipo: "Otro", descripcion: "Ubicar equipo reportado como No Ubicable en planilla (abril).",
+        tareas: [{ texto: "Consultar a jefatura de Cardiología", hecha: false }],
+        responsableAdmin: "Cristián Beltrán Oviedo", responsableEjecutivo: "Ignacio Berner Bergara",
+        gestiones: [], enEspera: { motivo: "Esperando respuesta de jefatura de servicio" },
+        fechaCompletado: null, origen: "manual", createdAt: "2026-05-02T08:00:00Z" },
+      { id: U.uid("pend"), equipoKey: k("ASKB-0021"), fechaCompromiso: "2026-05-15",
+        tipo: "Protocolo Externo de Mantenimiento",
+        descripcion: "Espera de repuestos para ventilador (C3).",
+        tareas: [{ texto: "Solicitar cotización repuesto", hecha: true }, { texto: "Emitir orden de compra", hecha: false }],
+        responsableAdmin: "Cristián Beltrán Oviedo", responsableEjecutivo: "Carlos Bahamondes Seguel",
+        gestiones: [{ fecha: "2026-04-15", texto: "Cotización solicitada al proveedor.", ts: "2026-04-15T10:00:00Z" }],
+        enEspera: null, fechaCompletado: null, origen: "preventivo", createdAt: "2026-04-12T10:00:00Z" },
+    ];
+
+    // Expediente correctivo completo (Paso 10/15) — equipo No Operativo con ciclo
+    const expId = U.uid("exp");
+    Store.db.expedientes = [{
+      id: expId, folioSigem: "SIGEM-2026-0488", equipoKey: k("ASKD-1190"),
+      tipoEvento: "Orden de Trabajo", requerimiento: "Falla en mezclador de gases, equipo no enciende.",
+      fechaDocumento: "2026-02-10", tecnico: "Carlos Bahamondes Seguel", estadoEquipo: "No Operativo",
+      tipoCompra: "Trato Directo",
+      informeTecnico: { numero: "IT-2026-031", fecha: "2026-02-20", responsable: "Carlos Bahamondes Seguel", empresa: "Dräger Medical" },
+      ordenCompra: { numero: "OC-7781", fecha: "2026-02-28", descripcion: "Repuesto mezclador de gases + visita técnica." },
+      estadoEvento: "Abierto", fechaCierre: null,
+      gestionPendiente: true, tipoRegistro: "Oficial", pendienteId: null,
+      createdAt: "2026-02-10T09:00:00Z",
+      avances: [
+        { id: U.uid("av"), tipo: "evaluacion", fechaReal: "2026-02-12", fechaRegistro: "2026-02-12", datos: { nota: "Se requiere repuesto, compra por trato directo." } },
+        { id: U.uid("av"), tipo: "cotizacion_solicitada", fechaReal: "2026-02-14", fechaRegistro: "2026-02-14", datos: { empresa: "Dräger Medical" } },
+        { id: U.uid("av"), tipo: "cotizacion_recibida", fechaReal: "2026-02-18", fechaRegistro: "2026-02-18", datos: { numero: "COT-9921", fecha: "2026-02-18" } },
+        { id: U.uid("av"), tipo: "informe_tecnico", fechaReal: "2026-02-20", fechaRegistro: "2026-02-20", datos: { numero: "IT-2026-031" } },
+        { id: U.uid("av"), tipo: "oc_emitida", fechaReal: "2026-02-28", fechaRegistro: "2026-02-28", datos: { numero: "OC-7781" } },
+        { id: U.uid("av"), tipo: "oc_enviada", fechaReal: "2026-03-01", fechaRegistro: "2026-03-01", datos: { empresa: "Dräger Medical" } },
+        { id: U.uid("av"), tipo: "envio_st", fechaReal: "2026-03-10", fechaRegistro: "2026-03-10", datos: { empresa: "Dräger Medical", numeroEnvio: "ENV-3321" } },
+      ],
+    }];
+
+    Store.commit();
+  };
+
+})(window);
+
+
+/* ===== assets/js/core/grabacion.js ===== */
+/* =========================================================================
+ * MP 2026 · grabacion.js
+ * Paso 14 — Grabación de sesión para mejora continua.
+ * Registra localmente la interacción (clics, escritura, navegación,
+ * apertura de formularios, filtros, desplazamiento, foco y tiempos)
+ * SIN enviar nada fuera del computador. Al detener, descarga un .json.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+
+  const Rec = MP.grabacion = {};
+  let activa = false;
+  let eventos = [];
+  let inicio = 0;
+  let ultimoClickTarget = null;
+  let clicksRepetidos = 0;
+  let tiempoFueraFoco = 0;
+  let foraDesde = 0;
+  let vistaActual = null;
+  let vistaDesde = 0;
+  const tiempoPorVista = {};
+  const handlers = {};
+
+  function t() { return Date.now() - inicio; }
+
+  function log(tipo, datos) {
+    if (!activa) return;
+    eventos.push(Object.assign({ t: t(), tipo }, datos || {}));
+  }
+
+  Rec.activa = function () { return activa; };
+
+  Rec.notarVista = function (vista) {
+    if (!activa) return;
+    const ahora = Date.now();
+    if (vistaActual) tiempoPorVista[vistaActual] = (tiempoPorVista[vistaActual] || 0) + (ahora - vistaDesde);
+    vistaActual = vista; vistaDesde = ahora;
+    log("navegacion", { vista });
+  };
+
+  Rec.notarFormulario = function (nombre, resultado, duracionMs) {
+    log("formulario", { nombre, resultado, duracionMs });
+  };
+
+  Rec.start = function () {
+    if (activa) return;
+    activa = true; eventos = []; inicio = Date.now();
+    tiempoFueraFoco = 0; clicksRepetidos = 0;
+    vistaActual = MP.app ? MP.app.vistaActual : null; vistaDesde = Date.now();
+    Object.keys(tiempoPorVista).forEach((k) => delete tiempoPorVista[k]);
+
+    handlers.click = (e) => {
+      const tgt = e.target;
+      const desc = describir(tgt);
+      if (ultimoClickTarget === desc) clicksRepetidos++; else clicksRepetidos = 0;
+      ultimoClickTarget = desc;
+      log("click", { objetivo: desc, repetido: clicksRepetidos > 0, x: e.clientX, y: e.clientY });
+    };
+    handlers.input = (e) => {
+      const tgt = e.target;
+      if (tgt && (tgt.tagName === "INPUT" || tgt.tagName === "TEXTAREA" || tgt.tagName === "SELECT")) {
+        log("escritura", { objetivo: describir(tgt), largo: (tgt.value || "").length });
+      }
+    };
+    let scrollTO;
+    handlers.scroll = () => {
+      clearTimeout(scrollTO);
+      scrollTO = setTimeout(() => log("desplazamiento", { y: Math.round(global.scrollY) }), 150);
+    };
+    handlers.blur = () => { foraDesde = Date.now(); log("foco", { estado: "fuera" }); };
+    handlers.focus = () => {
+      if (foraDesde) { tiempoFueraFoco += Date.now() - foraDesde; foraDesde = 0; }
+      log("foco", { estado: "dentro" });
+    };
+    handlers.beforeunload = (e) => {
+      if (activa) { e.preventDefault(); e.returnValue = ""; return ""; }
+    };
+
+    document.addEventListener("click", handlers.click, true);
+    document.addEventListener("input", handlers.input, true);
+    global.addEventListener("scroll", handlers.scroll, true);
+    global.addEventListener("blur", handlers.blur);
+    global.addEventListener("focus", handlers.focus);
+    global.addEventListener("beforeunload", handlers.beforeunload);
+
+    log("inicio", { ua: navigator.userAgent });
+    MP.ui.toast("Grabación iniciada (solo local).", "info");
+  };
+
+  Rec.stop = function () {
+    if (!activa) return;
+    activa = false;
+    if (vistaActual) tiempoPorVista[vistaActual] = (tiempoPorVista[vistaActual] || 0) + (Date.now() - vistaDesde);
+    if (foraDesde) { tiempoFueraFoco += Date.now() - foraDesde; foraDesde = 0; }
+
+    document.removeEventListener("click", handlers.click, true);
+    document.removeEventListener("input", handlers.input, true);
+    global.removeEventListener("scroll", handlers.scroll, true);
+    global.removeEventListener("blur", handlers.blur);
+    global.removeEventListener("focus", handlers.focus);
+    global.removeEventListener("beforeunload", handlers.beforeunload);
+
+    const duracionTotal = Date.now() - inicio;
+    const resumen = {
+      _app: "MP2026-grabacion", fecha: new Date().toISOString(),
+      duracionMs: duracionTotal,
+      tiempoActivoMs: duracionTotal - tiempoFueraFoco,
+      tiempoFueraFocoMs: tiempoFueraFoco,
+      tiempoPorVistaMs: tiempoPorVista,
+      totalEventos: eventos.length,
+      clics: eventos.filter((e) => e.tipo === "click").length,
+      clicsRepetidos: eventos.filter((e) => e.tipo === "click" && e.repetido).length,
+      formularios: eventos.filter((e) => e.tipo === "formulario"),
+      eventos,
+    };
+    const blob = new Blob([JSON.stringify(resumen, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = U.el("a", { href: url, download: "grabacion_MP2026_" + U.todayISO() + "_" + Date.now() + ".json" });
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    MP.ui.toast("Grabación detenida y descargada (" + eventos.length + " eventos).", "ok");
+  };
+
+  Rec.toggle = function () { activa ? Rec.stop() : Rec.start(); };
+
+  function describir(tgt) {
+    if (!tgt || !tgt.tagName) return "documento";
+    let d = tgt.tagName.toLowerCase();
+    if (tgt.id) d += "#" + tgt.id;
+    else if (tgt.className && typeof tgt.className === "string") {
+      const c = tgt.className.split(/\s+/).filter(Boolean).slice(0, 2).join(".");
+      if (c) d += "." + c;
+    }
+    const txt = (tgt.textContent || "").trim().slice(0, 24);
+    if (txt && (tgt.tagName === "BUTTON" || tgt.tagName === "A")) d += " «" + txt + "»";
+    return d;
+  }
+
+})(window);
+
+
+/* ===== assets/js/views/forms.js ===== */
+/* =========================================================================
+ * MP 2026 · forms.js
+ * Formularios de captura: Mantenimiento Preventivo (Paso 8),
+ * Pendientes (Paso 9) y Mantenimiento Correctivo (Paso 10),
+ * más los formularios de "Registrar avance" del expediente.
+ *
+ * Autoguardado de borrador (mejora continua): mientras se completa un
+ * formulario, los valores se persisten en localStorage. Si la pestaña se
+ * cierra o se navega sin guardar, al reabrir el mismo formulario se ofrece
+ * recuperar lo escrito. El borrador se descarta al Guardar o Cancelar.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+  const F = MP.forms = {};
+
+  /* ----- Helpers de campos ------------------------------------------- */
+  function field(label, control, hint) {
+    return el("div", { class: "field" }, [
+      el("label", { class: "field-label" }, label),
+      control,
+      hint ? el("div", { class: "field-hint", html: hint }) : null,
+    ]);
+  }
+  function input(attrs) { return el("input", Object.assign({ class: "ctrl" }, attrs)); }
+  function textarea(attrs) { return el("textarea", Object.assign({ class: "ctrl", rows: 3 }, attrs)); }
+  function select(opciones, valor, attrs) {
+    const s = el("select", Object.assign({ class: "ctrl" }, attrs || {}));
+    s.appendChild(el("option", { value: "" }, "— Seleccionar —"));
+    opciones.forEach((o) => {
+      const val = typeof o === "object" ? o.value : o;
+      const txt = typeof o === "object" ? o.label : o;
+      s.appendChild(el("option", { value: val, selected: val === valor }, txt));
+    });
+    return s;
+  }
+  function segmented(opciones, valor, onChange) {
+    const wrap = el("div", { class: "segmented" });
+    let current = valor;
+    opciones.forEach((o) => {
+      const b = el("button", { type: "button", class: "seg" + (o === current ? " active" : "") }, o);
+      b.addEventListener("click", () => {
+        current = o;
+        wrap.querySelectorAll(".seg").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        onChange && onChange(current);
+      });
+      wrap.appendChild(b);
+    });
+    wrap.getValue = () => current;
+    return wrap;
+  }
+  F._field = field; F._input = input; F._select = select; F._segmented = segmented; F._textarea = textarea;
+
+  /* ----- Autoguardado de borradores ---------------------------------- */
+  F._draftKey = function (kind, ctx) { return "mp2026_draft_" + kind + "_" + (ctx || ""); };
+  F._loadDraft = function (key) {
+    try { const r = JSON.parse(localStorage.getItem(key) || "null"); return r ? r.data : null; }
+    catch (e) { return null; }
+  };
+  F._saveDraft = function (key, data) {
+    try { localStorage.setItem(key, JSON.stringify({ _ts: Date.now(), data })); } catch (e) {}
+  };
+  F._clearDraft = function (key) { try { localStorage.removeItem(key); } catch (e) {} };
+
+  // Conecta el autoguardado a un cuerpo de modal; devuelve un control con
+  // .save() manual y un flag para detenerlo al descartar.
+  function wireAutosave(body, key, collect) {
+    const ctl = { stopped: false };
+    const save = () => { if (!ctl.stopped) F._saveDraft(key, collect()); };
+    body.addEventListener("input", save, true);
+    body.addEventListener("change", save, true);
+    ctl.save = save;
+    return ctl;
+  }
+
+  function draftNote(onDiscard) {
+    return el("div", { class: "draft-note" }, [
+      el("span", {}, "📝 Se recuperó un borrador sin guardar de una sesión anterior."),
+      UI.btn("Descartar borrador", "ghost sm", onDiscard),
+    ]);
+  }
+
+  /* =====================================================================
+   * Paso 8 — Mantenimiento Preventivo
+   * ===================================================================== */
+  F.preventivo = function (equipoKey, onSaved) {
+    const eq = Store.equipoByKey(equipoKey);
+    if (!eq) return;
+
+    const key = F._draftKey("preventivo", equipoKey);
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
+
+    const fFecha = input({ type: "date", value: g("fecha", U.todayISO()) });
+    const fProg = select(C.PROGRAMA_VALIDOS.map((p) => ({ value: p, label: p + " — " + C.PROGRAMA[p] })), g("programacion", ""));
+    const fEjec = select(C.EJECUTORES, g("ejecutor", ""));
+    const fRes = select(C.RESULTADO_VALIDOS.map((r) => ({ value: r, label: r + " — " + C.RESULTADO[r] })), g("resultado", ""));
+    const fObs = textarea({ placeholder: "Observaciones (opcional)" }); fObs.value = g("observaciones", "");
+    let estadoEquipo = g("estadoEquipo", "Operativo");
+    const fEstado = segmented(["Operativo", "No Operativo"], estadoEquipo, (v) => { estadoEquipo = v; auto && auto.save(); });
+    const gestionCb = el("input", { type: "checkbox" }); gestionCb.checked = !!g("gestion", false);
+    const fGestion = el("label", { class: "switch" }, [gestionCb, el("span", {}, "Generar pendiente asociado")]);
+    let tipoReg = g("tipoReg", "Oficial");
+    const fTipo = segmented(["Oficial", "Borrador"], tipoReg, (v) => { tipoReg = v; auto && auto.save(); });
+
+    const collect = () => ({
+      fecha: fFecha.value, programacion: fProg.value, ejecutor: fEjec.value,
+      resultado: fRes.value, observaciones: fObs.value, estadoEquipo: fEstado.getValue(),
+      gestion: gestionCb.checked, tipoReg: fTipo.getValue(),
+    });
+
+    const hintProg = el("div", { class: "field-hint" });
+    function actualizarSugerencia() {
+      const mesKey = U.mesKeyFromISO(fFecha.value);
+      const progPlanilla = (eq.programacion && eq.programacion[mesKey]) || "";
+      const mesesProg = C.MESES.filter((m) => eq.programacion && eq.programacion[m.key])
+        .map((m) => m.nombre + " (" + eq.programacion[m.key] + ")");
+      if (progPlanilla) {
+        hintProg.innerHTML = "📌 La planilla indica <b>" + progPlanilla + "</b> para " +
+          U.mesNombre(mesKey) + ". " + (mesesProg.length ? "Meses programados: " + mesesProg.join(", ") + "." : "");
+        if (!fProg.value) fProg.value = progPlanilla;
+      } else {
+        hintProg.innerHTML = "Sin programación en la planilla para " + U.mesNombre(mesKey) + "." +
+          (mesesProg.length ? " Meses programados del equipo: " + mesesProg.join(", ") + "." : "");
+      }
+    }
+    fFecha.addEventListener("change", actualizarSugerencia);
+    setTimeout(actualizarSugerencia, 0);
+
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.preventivo(equipoKey, onSaved); }) : null;
+    const form = el("div", { class: "form-grid" }, [
+      note,
+      field("Fecha de la mantención", fFecha),
+      field("Programación", fProg, "Sugerida según la planilla; puede cambiarla."),
+      hintProg,
+      field("Ejecutor", fEjec),
+      field("Resultado", fRes),
+      field("Observaciones", fObs),
+      field("Estado del equipo", fEstado),
+      field("Gestión pendiente", fGestion, "Si se marca, se crea un pendiente vinculado (tipo y plazo según la causal)."),
+      field("Tipo de registro", fTipo),
+    ]);
+
+    const t0 = Date.now();
+    const m = UI.modal({
+      title: "Mantenimiento Preventivo · " + eq.equipo + " (" + (eq.serie || eq.nInventario) + ")",
+      size: "md", body: form,
+      footer: [
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("preventivo", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Guardar", "primary", () => {
+          if (!fFecha.value) { UI.toast("Ingrese la fecha.", "warn"); return; }
+          if (!fRes.value) { UI.toast("Seleccione un resultado.", "warn"); return; }
+          Store.guardarMantencion({
+            equipoKey, fecha: fFecha.value, programacion: fProg.value, ejecutor: fEjec.value,
+            resultado: fRes.value, observaciones: fObs.value, estadoEquipo,
+            gestionPendiente: gestionCb.checked, tipoRegistro: tipoReg,
+          });
+          auto.stopped = true; F._clearDraft(key);
+          MP.grabacion.notarFormulario("preventivo", "guardado", Date.now() - t0);
+          UI.toast("Mantención preventiva guardada (" + tipoReg + ").", "ok");
+          m.close(); onSaved && onSaved();
+        }),
+      ],
+    });
+    const auto = wireAutosave(m.body, key, collect);
+  };
+
+  /* =====================================================================
+   * Paso 9 — Pendiente
+   * ===================================================================== */
+  F.pendiente = function (equipoKey, onSaved, existente) {
+    const eq = equipoKey ? Store.equipoByKey(equipoKey) : null;
+    const p = existente || {};
+
+    const key = F._draftKey("pendiente", (equipoKey || "global") + "_" + (existente ? existente.id : "new"));
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
+
+    const fFecha = input({ type: "date", value: g("fechaCompromiso", p.fechaCompromiso || U.todayISO()) });
+    const quick = el("div", { class: "quick-dates" }, [
+      UI.btn("Hoy", "chip", () => { fFecha.value = U.todayISO(); auto && auto.save(); }),
+      UI.btn("3 días", "chip", () => { fFecha.value = U.addDays(U.todayISO(), 3); auto && auto.save(); }),
+      UI.btn("1 semana", "chip", () => { fFecha.value = U.addDays(U.todayISO(), 7); auto && auto.save(); }),
+    ]);
+    const fTipo = select(C.TIPOS_PENDIENTE, g("tipo", p.tipo));
+    const fDesc = textarea({ placeholder: "Descripción (opcional)" }); fDesc.value = g("descripcion", p.descripcion || "");
+    const fAdmin = select(C.EJECUTORES, g("responsableAdmin", p.responsableAdmin || "Cristián Beltrán Oviedo"));
+    const fEjec = select(C.EJECUTORES, g("responsableEjecutivo", p.responsableEjecutivo));
+
+    const tareas = (g("tareas", null) || (p.tareas || [])).map((t) => ({ texto: t.texto, hecha: !!t.hecha }));
+    const tareasList = el("div", { class: "tareas-list" });
+    function renderTareas() {
+      tareasList.innerHTML = "";
+      tareas.forEach((t, i) => {
+        const cb = el("input", { type: "checkbox" }); cb.checked = !!t.hecha;
+        cb.addEventListener("change", () => { t.hecha = cb.checked; auto && auto.save(); });
+        tareasList.appendChild(el("div", { class: "tarea-row" }, [
+          cb, el("span", { class: "tarea-txt" + (t.hecha ? " done" : "") }, t.texto),
+          UI.btn("✕", "icon-btn", () => { tareas.splice(i, 1); renderTareas(); auto && auto.save(); }),
+        ]));
+      });
+    }
+    renderTareas();
+    const nuevaTarea = input({ placeholder: "Nueva tarea…" });
+    const addTareaFn = () => { if (nuevaTarea.value.trim()) { tareas.push({ texto: nuevaTarea.value.trim(), hecha: false }); nuevaTarea.value = ""; renderTareas(); auto && auto.save(); } };
+    nuevaTarea.addEventListener("keydown", (e) => { if (e.key === "Enter") addTareaFn(); });
+    const addTarea = el("div", { class: "add-tarea" }, [nuevaTarea, UI.btn("+ Agregar", "ghost sm", addTareaFn)]);
+
+    const fGestion = textarea({ placeholder: "Registrar una gestión / actualización (opcional)" });
+    fGestion.value = g("gestionNueva", "");
+
+    const collect = () => ({
+      fechaCompromiso: fFecha.value, tipo: fTipo.value, descripcion: fDesc.value,
+      responsableAdmin: fAdmin.value, responsableEjecutivo: fEjec.value,
+      tareas: tareas.map((t) => ({ texto: t.texto, hecha: t.hecha })), gestionNueva: fGestion.value,
+    });
+
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.pendiente(equipoKey, onSaved, existente); }) : null;
+    const form = el("div", { class: "form-grid" }, [
+      note,
+      field("Fecha de compromiso", el("div", {}, [fFecha, quick])),
+      field("Tipo de pendiente", fTipo),
+      field("Descripción", fDesc),
+      field("Tareas", el("div", {}, [tareasList, addTarea])),
+      field("Responsable Administrativo", fAdmin),
+      field("Responsable Ejecutivo", fEjec),
+      field("Gestión asociada", fGestion),
+    ]);
+
+    const t0 = Date.now();
+    const m = UI.modal({
+      title: (existente ? "Editar pendiente" : "Nuevo pendiente") + (eq ? " · " + eq.equipo : ""),
+      size: "md", body: form,
+      footer: [
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("pendiente", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Guardar", "primary", () => {
+          const data = {
+            id: p.id, equipoKey: equipoKey || p.equipoKey,
+            fechaCompromiso: fFecha.value, tipo: fTipo.value, descripcion: fDesc.value,
+            tareas, responsableAdmin: fAdmin.value, responsableEjecutivo: fEjec.value,
+            gestiones: p.gestiones || [], enEspera: p.enEspera || null,
+            fechaCompletado: p.fechaCompletado || null, origen: p.origen || "manual",
+          };
+          if (existente) Store.guardarPendiente(data);
+          else Store.crearPendiente(data);
+          if (fGestion.value.trim()) {
+            const target = existente ? p.id : Store.db.pendientes[Store.db.pendientes.length - 1].id;
+            Store.agregarGestion(target, fGestion.value.trim());
+          }
+          auto.stopped = true; F._clearDraft(key);
+          MP.grabacion.notarFormulario("pendiente", "guardado", Date.now() - t0);
+          UI.toast("Pendiente guardado.", "ok");
+          m.close(); onSaved && onSaved();
+        }),
+      ],
+    });
+    const auto = wireAutosave(m.body, key, collect);
+  };
+
+  /* =====================================================================
+   * Paso 10 — Mantenimiento Correctivo (apertura de expediente / evento)
+   * ===================================================================== */
+  F.correctivo = function (equipoKey, onSaved) {
+    const eq = Store.equipoByKey(equipoKey);
+    if (!eq) return;
+
+    const key = F._draftKey("correctivo", equipoKey);
+    const draft = F._loadDraft(key);
+    const g = (n, fb) => (draft && n in draft) ? draft[n] : fb;
+
+    const fTipoEvento = select(C.TIPOS_EVENTO, g("tipoEvento", "Orden de Trabajo"));
+    const fReq = textarea({ placeholder: "Requerimiento (opcional)" }); fReq.value = g("requerimiento", "");
+    const fFecha = input({ type: "date", value: g("fechaDocumento", U.todayISO()) });
+    const fFolio = input({ placeholder: "Folio de Solicitud SIGEM", value: g("folio", "") });
+    const fTec = select(C.EJECUTORES, g("tecnico", ""));
+    let estadoEq = g("estadoEquipo", "No Operativo");
+    const fEstado = segmented(C.ESTADOS_EQUIPO_CORR, estadoEq, (v) => { estadoEq = v; actualizarCrit(); auto && auto.save(); });
+    const fCompra = select(C.TIPOS_COMPRA, g("tipoCompra", ""));
+
+    const tdBox = el("div", { class: "subform hidden" });
+    const tdNum = input({ placeholder: "N° informe técnico", value: g("tdNum", "") });
+    const tdFecha = input({ type: "date", value: g("tdFecha", "") });
+    const tdResp = select(C.EJECUTORES, g("tdResp", ""));
+    const tdEmpresa = select(C.EMPRESAS, g("tdEmpresa", ""));
+    tdBox.appendChild(el("div", { class: "subform-title" }, "Informe técnico (Trato Directo)"));
+    tdBox.appendChild(el("div", { class: "form-grid" }, [
+      field("N° informe técnico", tdNum), field("Fecha informe", tdFecha),
+      field("Responsable informe", tdResp), field("Empresa", tdEmpresa),
+    ]));
+    function toggleTD() { tdBox.classList.toggle("hidden", fCompra.value !== "Trato Directo"); }
+    fCompra.addEventListener("change", toggleTD);
+
+    const ocNum = input({ placeholder: "N° orden de compra", value: g("ocNum", "") });
+    const ocFecha = input({ type: "date", value: g("ocFecha", "") });
+    const ocDesc = textarea({ placeholder: "Descripción de la OC (opcional)" }); ocDesc.value = g("ocDesc", "");
+
+    const gestionCb = el("input", { type: "checkbox" }); gestionCb.checked = !!g("gestion", false);
+    const fGestion = el("label", { class: "switch" }, [gestionCb, el("span", {}, "Generar pendiente asociado")]);
+    let tipoReg = g("tipoReg", "Oficial");
+    const fTipoReg = segmented(["Oficial", "Borrador"], tipoReg, (v) => { tipoReg = v; auto && auto.save(); });
+
+    const critHint = el("div", { class: "field-hint" });
+    function actualizarCrit() {
+      critHint.innerHTML = estadoEq === "No Operativo"
+        ? "⚠️ <b>Flujo crítico</b>: se medirán los días de detención y se creará un pendiente con las tareas del ciclo."
+        : "Flujo normal: se mide el ciclo administrativo del expediente.";
+    }
+    setTimeout(() => { actualizarCrit(); toggleTD(); }, 0);
+
+    const collect = () => ({
+      tipoEvento: fTipoEvento.value, requerimiento: fReq.value, fechaDocumento: fFecha.value,
+      folio: fFolio.value, tecnico: fTec.value, estadoEquipo: fEstado.getValue(), tipoCompra: fCompra.value,
+      tdNum: tdNum.value, tdFecha: tdFecha.value, tdResp: tdResp.value, tdEmpresa: tdEmpresa.value,
+      ocNum: ocNum.value, ocFecha: ocFecha.value, ocDesc: ocDesc.value,
+      gestion: gestionCb.checked, tipoReg: fTipoReg.getValue(),
+    });
+
+    const note = draft ? draftNote(() => { F._clearDraft(key); if (auto) auto.stopped = true; m.close(); F.correctivo(equipoKey, onSaved); }) : null;
+    const form = el("div", { class: "form-grid" }, [
+      note,
+      field("Tipo de evento", fTipoEvento),
+      field("Requerimiento", fReq),
+      field("Fecha del documento", fFecha),
+      field("Folio de Solicitud SIGEM", fFolio),
+      field("Técnico asignado", fTec),
+      field("Estado del equipo", fEstado), critHint,
+      field("Tipo de compra", fCompra),
+      tdBox,
+      el("div", { class: "subform-title" }, "Orden de compra (opcional)"),
+      el("div", { class: "form-grid" }, [field("N° orden de compra", ocNum), field("Fecha OC", ocFecha)]),
+      field("Descripción OC", ocDesc),
+      field("Gestión pendiente", fGestion),
+      field("Tipo de registro", fTipoReg),
+    ]);
+
+    const t0 = Date.now();
+    const m = UI.modal({
+      title: "Mantenimiento Correctivo · " + eq.equipo,
+      size: "lg", body: form,
+      footer: [
+        UI.btn("Cancelar", "ghost", () => { auto.stopped = true; F._clearDraft(key); MP.grabacion.notarFormulario("correctivo", "cancelado", Date.now() - t0); m.close(); }),
+        UI.btn("Abrir expediente", "primary", () => {
+          if (!fFolio.value.trim()) { UI.toast("Ingrese el folio SIGEM.", "warn"); return; }
+          Store.crearExpediente({
+            equipoKey, tipoEvento: fTipoEvento.value, requerimiento: fReq.value,
+            fechaDocumento: fFecha.value, folioSigem: fFolio.value.trim(), tecnico: fTec.value,
+            estadoEquipo: estadoEq, tipoCompra: fCompra.value,
+            informeTecnico: fCompra.value === "Trato Directo" && tdNum.value
+              ? { numero: tdNum.value, fecha: tdFecha.value, responsable: tdResp.value, empresa: tdEmpresa.value } : null,
+            ordenCompra: ocNum.value ? { numero: ocNum.value, fecha: ocFecha.value, descripcion: ocDesc.value } : null,
+            gestionPendiente: gestionCb.checked, tipoRegistro: tipoReg,
+          });
+          auto.stopped = true; F._clearDraft(key);
+          MP.grabacion.notarFormulario("correctivo", "guardado", Date.now() - t0);
+          UI.toast("Expediente correctivo abierto.", "ok");
+          m.close(); onSaved && onSaved();
+        }),
+      ],
+    });
+    const auto = wireAutosave(m.body, key, collect);
+  };
+
+  /* =====================================================================
+   * Registrar avance del expediente (Paso 10/12)
+   * ===================================================================== */
+  const AVANCES = [
+    { tipo: "evaluacion", label: "Evaluación técnica" },
+    { tipo: "cotizacion_solicitada", label: "Cotización solicitada" },
+    { tipo: "cotizacion_recibida", label: "Cotización recibida" },
+    { tipo: "informe_tecnico", label: "Informe técnico" },
+    { tipo: "oc_emitida", label: "OC emitida" },
+    { tipo: "oc_enviada", label: "OC enviada al proveedor" },
+    { tipo: "envio_st", label: "Envío a Servicio Técnico" },
+    { tipo: "retorno_st", label: "Retorno de Servicio Técnico" },
+    { tipo: "visita_ejecucion", label: "Visita / Ejecución realizada" },
+    { tipo: "cierre", label: "Cierre del expediente" },
+  ];
+  F._avancesCatalogo = AVANCES;
+
+  F.registrarAvance = function (expId, tipoSugerido, onSaved) {
+    const x = Store.db.expedientes.find((e) => e.id === expId);
+    if (!x) return;
+
+    const fTipo = select(AVANCES.map((a) => ({ value: a.tipo, label: a.label })), tipoSugerido);
+    const fFecha = input({ type: "date", value: U.todayISO() });
+    const dyn = el("div", { class: "form-grid" });
+
+    function renderDyn() {
+      dyn.innerHTML = "";
+      const t = fTipo.value;
+      if (t === "envio_st") {
+        const emp = select(C.EMPRESAS); const num = input({ placeholder: "N° de envío (obligatorio)" });
+        const desc = textarea({ placeholder: "Descripción (opcional)" });
+        dyn._get = () => ({ empresa: emp.value, numeroEnvio: num.value, descripcion: desc.value });
+        dyn._valid = () => emp.value && num.value.trim();
+        dyn.appendChild(field("Empresa de destino", emp));
+        dyn.appendChild(field("N° de envío", num));
+        dyn.appendChild(field("Descripción", desc));
+      } else if (t === "retorno_st") {
+        const ultimoEnvio = (x.avances || []).slice().reverse().find((a) => a.tipo === "envio_st");
+        const emp = select(C.EMPRESAS, ultimoEnvio && ultimoEnvio.datos ? ultimoEnvio.datos.empresa : "");
+        const folio = input({ placeholder: "Folio de retorno (obligatorio)" });
+        const quien = input({ placeholder: "Persona de la empresa (opcional)" });
+        let estado = "Operativo";
+        const seg = segmented(["Operativo", "No Operativo"], "Operativo", (v) => estado = v);
+        dyn._get = () => ({ empresa: emp.value, folioRetorno: folio.value, quien: quien.value, estadoEquipo: estado });
+        dyn._valid = () => folio.value.trim();
+        dyn.appendChild(field("Folio Orden de Trabajo", el("div", { class: "readonly-val" }, x.folioSigem)));
+        dyn.appendChild(field("Empresa", emp));
+        dyn.appendChild(field("Folio de retorno", folio));
+        dyn.appendChild(field("Quién lo envió", quien));
+        dyn.appendChild(field("¿Cómo quedó el equipo?", seg));
+      } else if (t === "visita_ejecucion") {
+        let estado = "Operativo";
+        const seg = segmented(["Operativo", "No Operativo"], "Operativo", (v) => estado = v);
+        const nota = textarea({ placeholder: "Nota / respaldo (opcional)" });
+        dyn._get = () => ({ estadoEquipo: estado, nota: nota.value });
+        dyn._valid = () => true;
+        dyn.appendChild(field("¿Cómo quedó el equipo?", seg));
+        dyn.appendChild(field("Nota", nota));
+      } else if (t === "cierre") {
+        let estado = x.estadoEquipo || "Operativo";
+        const seg = segmented(["Operativo", "No Operativo"], estado, (v) => estado = v);
+        const nota = textarea({ placeholder: "Nota de cierre (opcional)" });
+        dyn._get = () => ({ estadoEquipo: estado, nota: nota.value });
+        dyn._valid = () => true;
+        dyn.appendChild(field("Estado final del equipo", seg));
+        dyn.appendChild(field("Nota de cierre", nota));
+      } else {
+        const num = input({ placeholder: "N° / referencia (opcional)" });
+        const emp = select(C.EMPRESAS);
+        const nota = textarea({ placeholder: "Detalle (opcional)" });
+        dyn._get = () => ({ numero: num.value, empresa: emp.value, nota: nota.value });
+        dyn._valid = () => true;
+        dyn.appendChild(field("N° / referencia", num));
+        if (t === "cotizacion_solicitada" || t === "cotizacion_recibida" || t === "oc_enviada")
+          dyn.appendChild(field("Empresa / proveedor", emp));
+        dyn.appendChild(field("Detalle", nota));
+      }
+      validarCronologia();
+    }
+    const cronoHint = el("div", { class: "field-hint" });
+    function validarCronologia() {
+      const ult = (x.avances || []).map((a) => a.fechaReal).filter(Boolean).sort();
+      const ultima = ult[ult.length - 1];
+      if (ultima && fFecha.value < ultima) {
+        cronoHint.innerHTML = "⚠️ La fecha es anterior al último hito (" + U.fmtDate(ultima) + "). Verifique el orden cronológico.";
+      } else cronoHint.innerHTML = "";
+    }
+    fTipo.addEventListener("change", renderDyn);
+    fFecha.addEventListener("change", validarCronologia);
+    setTimeout(renderDyn, 0);
+
+    const body = el("div", {}, [
+      el("div", { class: "form-grid" }, [
+        field("Tipo de avance", fTipo),
+        field("Fecha real del hecho", fFecha),
+      ]),
+      cronoHint, dyn,
+    ]);
+
+    const m = UI.modal({
+      title: "Registrar avance · Folio " + x.folioSigem,
+      size: "md", body,
+      footer: [
+        UI.btn("Cancelar", "ghost", () => m.close()),
+        UI.btn("Registrar", "primary", () => {
+          if (dyn._valid && !dyn._valid()) { UI.toast("Complete los campos obligatorios.", "warn"); return; }
+          Store.registrarAvance(expId, {
+            tipo: fTipo.value, fechaReal: fFecha.value, datos: dyn._get ? dyn._get() : {},
+          });
+          UI.toast("Avance registrado.", "ok");
+          m.close(); onSaved && onSaved();
+        }),
+      ],
+    });
+  };
+
+})(window);
+
+
+/* ===== assets/js/views/equipos.js ===== */
+/* =========================================================================
+ * MP 2026 · equipos.js  —  Paso 2: Vista de equipos
+ * Tabla con columnas de la base + 4 calculadas (Estado, Días en estado,
+ * Última actualización, Pendientes), filtros tipo Excel y filas abribles.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const Store = MP.store;
+
+  function chipEstado(estado) {
+    const cls = estado === "Operativo" ? "ok" : estado === "Servicio Técnico" ? "warn" : "bad";
+    return el("span", { class: "chip estado-" + cls }, estado);
+  }
+
+  MP.views = MP.views || {};
+  MP.views.equipos = function (container) {
+    const equipos = Store.equipos();
+
+    if (equipos.length === 0) {
+      container.appendChild(el("div", { class: "empty-state" }, [
+        el("div", { class: "empty-ico" }, "📭"),
+        el("h2", {}, "Sin equipos cargados"),
+        el("p", {}, "Importe la planilla ProgramaciónMP2026 (hoja PMP_2026) o cargue datos de demostración desde la pestaña «Datos»."),
+        MP.ui.btn("Ir a Datos", "primary", () => MP.app.go("datos")),
+      ]));
+      return;
+    }
+
+    // Filas con calculados
+    const rows = equipos.map((e) => {
+      const key = U.equipoKey(e);
+      const est = Store.estadoEquipo(key);
+      const pend = Store.pendientesAbiertosDe(key);
+      const corr = Store.expedientesDe(key).filter((x) => x.estadoEvento !== "Cerrado").length;
+      return {
+        _corr: corr,
+        _eq: e, _key: key,
+        id: e.id, nCarpeta: e.nCarpeta, nInventario: e.nInventario, equipo: e.equipo,
+        servicio: e.servicio, unidad: e.unidad, ubicacion: e.ubicacion, procedencia: e.procedencia,
+        marca: e.marca, modelo: e.modelo, serie: e.serie, anioInstalacion: e.anioInstalacion,
+        vidaUtilResidual: e.vidaUtilResidual, clasificacion: e.clasificacion, enuBaja: e.enuBaja,
+        _estado: est.estado, _dias: est.dias, _ultima: Store.ultimaActualizacion(key),
+        _pend: pend.length,
+      };
+    });
+
+    const cols = [
+      { key: "id", label: "ID", align: "right", defaultVisible: false },
+      { key: "nCarpeta", label: "N° Carpeta", defaultVisible: false },
+      { key: "nInventario", label: "N° Inventario" },
+      { key: "equipo", label: "Equipo" },
+      { key: "servicio", label: "Servicio" },
+      { key: "unidad", label: "Unidad", defaultVisible: false },
+      { key: "ubicacion", label: "Ubicación", defaultVisible: false },
+      { key: "procedencia", label: "Procedencia", defaultVisible: false },
+      { key: "marca", label: "Marca" },
+      { key: "modelo", label: "Modelo", defaultVisible: false },
+      { key: "serie", label: "Serie" },
+      { key: "anioInstalacion", label: "Año Inst.", defaultVisible: false, align: "right" },
+      { key: "vidaUtilResidual", label: "Vida Útil Res.", defaultVisible: false, align: "right" },
+      { key: "clasificacion", label: "Clasificación", defaultVisible: false },
+      { key: "enuBaja", label: "ENU/Baja", defaultVisible: false },
+      { key: "_estado", label: "Estado", text: (r) => r._estado + (r._corr > 0 ? " · correctivo" : ""),
+        render: (r) => {
+          const wrap = el("span", { class: "estado-cell" }, [chipEstado(r._estado)]);
+          if (r._corr > 0) wrap.appendChild(el("span", { class: "corr-badge", title: r._corr + " expediente(s) correctivo(s) abierto(s) — clic en la fila para verlos" }, "🔧" + r._corr));
+          return wrap;
+        } },
+      { key: "_corr", label: "Correctivo abierto", align: "center", defaultVisible: false,
+        render: (r) => r._corr > 0 ? el("span", { class: "chip warn" }, r._corr) : el("span", { class: "muted" }, "0"),
+        text: (r) => String(r._corr) },
+      { key: "_dias", label: "Días en estado", align: "right",
+        render: (r) => el("span", {}, r._dias === null ? "—" : r._dias + " d"), text: (r) => r._dias === null ? "" : String(r._dias) },
+      { key: "_ultima", label: "Última actualización",
+        render: (r) => el("span", {}, r._ultima ? U.fmtDate(r._ultima) : "—"), text: (r) => r._ultima || "" },
+      { key: "_pend", label: "Pendientes", align: "center",
+        render: (r) => r._pend > 0 ? el("span", { class: "chip warn" }, r._pend) : el("span", { class: "muted" }, "0"),
+        text: (r) => String(r._pend) },
+    ];
+
+    const dt = MP.ui.DataTable({
+      columns: cols, rows, storageKey: "equipos", exportName: "Equipos_MP2026",
+      onRowClick: (r) => MP.views.detalle(r._key),
+      rowClass: (r) => r._estado === "No Operativo" ? "row-bad" : r._estado === "Servicio Técnico" ? "row-warn" : "",
+    });
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Equipos"),
+      el("p", { class: "view-sub" }, equipos.length + " equipos · clic en una fila para ver el detalle."),
+    ]));
+    container.appendChild(dt.root);
+  };
+
+  MP.views._chipEstado = chipEstado;
+})(window);
+
+
+/* ===== assets/js/views/detalle.js ===== */
+/* =========================================================================
+ * MP 2026 · detalle.js  —  Paso 7: Vista de detalle del equipo
+ * Datos copiables, historial unificado por mes, pendientes y expedientes
+ * correctivos con línea de tiempo. Tres botones de acción.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+
+  function copiable(label, valor) {
+    const v = U.asText(valor);
+    const cell = el("div", { class: "kv", title: "Clic para copiar" }, [
+      el("div", { class: "kv-label" }, label),
+      el("div", { class: "kv-value" }, v || "—"),
+    ]);
+    cell.addEventListener("click", () => {
+      if (!v) return;
+      navigator.clipboard && navigator.clipboard.writeText(v);
+      cell.classList.add("copied");
+      UI.toast("Copiado: " + v, "ok");
+      setTimeout(() => cell.classList.remove("copied"), 600);
+    });
+    return cell;
+  }
+
+  MP.views = MP.views || {};
+  MP.views.detalle = function (equipoKey) {
+    const eq = Store.equipoByKey(equipoKey);
+    if (!eq) { UI.toast("Equipo no encontrado.", "warn"); return; }
+
+    const body = el("div", { class: "detalle" });
+    const m = UI.modal({ title: eq.equipo + " — " + (eq.serie || eq.nInventario), size: "xl", body });
+
+    function render() {
+      body.innerHTML = "";
+      const est = Store.estadoEquipo(equipoKey);
+      const pendientes = Store.pendientesDe(equipoKey);
+      const expedientes = Store.expedientesDe(equipoKey);
+
+      // Encabezado con estado
+      body.appendChild(el("div", { class: "detalle-top" }, [
+        MP.views._chipEstado(est.estado),
+        el("span", { class: "muted" }, est.dias === null ? "" : ("· " + est.dias + " días en estado")),
+        el("span", { class: "muted" }, "· Última actualización: " +
+          (Store.ultimaActualizacion(equipoKey) ? U.fmtDate(Store.ultimaActualizacion(equipoKey)) : "—")),
+      ]));
+
+      // Botones de acción (Paso 7)
+      body.appendChild(el("div", { class: "detalle-actions" }, [
+        UI.btn("🛠 Mantenimiento Preventivo", "primary", () => MP.forms.preventivo(equipoKey, render)),
+        UI.btn("📋 Pendientes", "secondary", () => MP.forms.pendiente(equipoKey, render)),
+        UI.btn("🔧 Mantenimiento Correctivo", "secondary", () => MP.forms.correctivo(equipoKey, render)),
+      ]));
+
+      // Datos del equipo (copiables)
+      body.appendChild(el("h4", { class: "sec-title" }, "Datos del equipo"));
+      body.appendChild(el("div", { class: "kv-grid" }, [
+        copiable("ID", eq.id), copiable("N° Carpeta", eq.nCarpeta), copiable("N° Inventario", eq.nInventario),
+        copiable("Equipo", eq.equipo), copiable("Servicio", eq.servicio), copiable("Unidad", eq.unidad),
+        copiable("Ubicación", eq.ubicacion), copiable("Procedencia", eq.procedencia), copiable("Marca", eq.marca),
+        copiable("Modelo", eq.modelo), copiable("Serie", eq.serie), copiable("Año Instalación", eq.anioInstalacion),
+        copiable("Vida Útil Residual", eq.vidaUtilResidual), copiable("Clasificación", eq.clasificacion),
+        copiable("ENU/Baja", eq.enuBaja),
+      ]));
+
+      // Historial de mantenciones unificado (una fila por mes)
+      body.appendChild(el("h4", { class: "sec-title" }, "Historial de mantenciones " + new Date().getFullYear()));
+      body.appendChild(historialUnificado(eq, equipoKey, render));
+
+      // Pendientes
+      body.appendChild(el("h4", { class: "sec-title" }, "Pendientes (" + pendientes.length + ")"));
+      body.appendChild(pendientesMini(pendientes, render));
+
+      // Expedientes correctivos con línea de tiempo
+      body.appendChild(el("h4", { class: "sec-title" }, "Mantenimiento correctivo (" + expedientes.length + ")"));
+      expedientes.forEach((x) => body.appendChild(expedienteCard(x, render)));
+      if (expedientes.length === 0) body.appendChild(el("p", { class: "muted" }, "Sin expedientes correctivos."));
+    }
+
+    function historialUnificado(eq, key, onChange) {
+      const mant = Store.mantencionesDe(key);
+      const tbl = el("table", { class: "mini-table" });
+      tbl.appendChild(el("thead", {}, el("tr", {}, [
+        el("th", {}, "Mes"), el("th", {}, "Programa (planilla)"), el("th", {}, "Resultado (planilla)"),
+        el("th", {}, "Registros app"), el("th", {}, ""),
+      ])));
+      const tb = el("tbody");
+      C.MESES.forEach((mes) => {
+        const prog = (eq.programacion && eq.programacion[mes.key]) || "";
+        const reg = (eq.registro && eq.registro[mes.key]) || {};
+        const mApp = mant.filter((x) => U.mesKeyFromISO(x.fecha) === mes.key);
+        // Mostrar solo meses con algo
+        if (!prog && !reg.programa && !reg.resultado && mApp.length === 0) return;
+        const appCell = el("td", {}, mApp.map((x) =>
+          el("div", { class: "mant-app" }, [
+            el("span", { class: "tag " + (x.tipoRegistro === "Borrador" ? "tag-draft" : "tag-official") }, x.tipoRegistro),
+            " " + U.fmtDate(x.fecha) + " · " + (x.programacion || "") + "/" + (x.resultado || "") + " · " + (x.ejecutor || ""),
+          ])));
+        tb.appendChild(el("tr", {}, [
+          el("td", {}, mes.nombre),
+          el("td", {}, prog ? el("span", { class: "code-pill" }, prog) : el("span", { class: "muted" }, "—")),
+          el("td", {}, reg.resultado ? el("span", { class: "code-pill res" }, reg.resultado) : el("span", { class: "muted" }, "—")),
+          appCell,
+          el("td", {}),
+        ]));
+      });
+      tbl.appendChild(tb);
+      if (tb.children.length === 0) return el("p", { class: "muted" }, "Sin programación ni registros este año.");
+      return tbl;
+    }
+
+    function pendientesMini(pendientes, onChange) {
+      if (pendientes.length === 0) return el("p", { class: "muted" }, "Sin pendientes.");
+      const wrap = el("div", { class: "pend-mini-list" });
+      pendientes.forEach((p) => {
+        const urg = Store.urgenciaPendiente(p);
+        wrap.appendChild(el("div", { class: "pend-mini urg-" + U.norm(urg).replace(/\s/g, "-") }, [
+          el("div", { class: "pend-mini-main" }, [
+            el("span", { class: "chip " + (urg === "Completado" ? "ok" : urg === "Atrasado" ? "bad" : "warn") }, urg),
+            el("b", {}, " " + p.tipo),
+            el("div", { class: "muted" }, (p.descripcion || "") + " · Compromiso: " + U.fmtDate(p.fechaCompromiso) +
+              " · " + Store.estadoPendiente(p)),
+          ]),
+          el("div", { class: "pend-mini-actions" }, [
+            !p.fechaCompletado ? UI.btn("✓ Completar", "ghost sm", () => { Store.completarPendiente(p.id); onChange(); }) : null,
+            UI.btn("Editar", "ghost sm", () => MP.forms.pendiente(p.equipoKey, onChange, p)),
+          ]),
+        ]));
+      });
+      return wrap;
+    }
+
+    function expedienteCard(x, onChange) {
+      const etapa = Store.etapaExpediente(x);
+      const card = el("div", { class: "exp-card" });
+      card.appendChild(el("div", { class: "exp-head" }, [
+        el("div", {}, [
+          el("b", {}, "Folio " + x.folioSigem),
+          el("span", { class: "chip " + (x.estadoEvento === "Cerrado" ? "ok" : "warn") }, " " + x.estadoEvento),
+          el("span", { class: "chip neutral" }, etapa),
+        ]),
+        el("div", { class: "muted" }, x.tipoEvento + " · " + x.tecnico + " · " +
+          Store.diasCicloExpediente(x) + " días de ciclo"),
+      ]));
+      if (x.requerimiento) card.appendChild(el("div", { class: "muted exp-req" }, "“" + x.requerimiento + "”"));
+
+      // Registro en un clic: siguiente paso (Paso 12)
+      card.appendChild(el("div", { class: "exp-quick" }, siguientePaso(x, onChange)));
+
+      // Línea de tiempo
+      const tl = el("div", { class: "timeline" });
+      const avances = (x.avances || []).slice().sort((a, b) => (a.fechaReal || "").localeCompare(b.fechaReal || ""));
+      // apertura
+      tl.appendChild(timelineItem("Apertura — " + x.estadoEquipo, x.fechaDocumento, null, null, null));
+      avances.forEach((a) => {
+        const lbl = (MP.forms._avancesCatalogo.find((c) => c.tipo === a.tipo) || { label: a.tipo }).label;
+        const det = detalleAvance(a);
+        tl.appendChild(timelineItem(lbl, a.fechaReal, a.fechaRegistro, a.fechaCorreccion, det, () => {
+          UI.confirm("¿Eliminar este avance de la bitácora?", () => { Store.eliminarAvance(x.id, a.id); onChange(); }, { danger: true, okText: "Eliminar" });
+        }));
+      });
+      card.appendChild(tl);
+
+      card.appendChild(el("div", { class: "exp-foot" }, [
+        UI.btn("+ Registrar avance", "secondary sm", () => MP.forms.registrarAvance(x.id, "", onChange)),
+        x.estadoEvento !== "Cerrado" ? UI.btn("Cerrar expediente", "ghost sm", () =>
+          MP.forms.registrarAvance(x.id, "cierre", onChange)) : null,
+      ]));
+      return card;
+    }
+
+    function siguientePaso(x, onChange) {
+      if (x.estadoEvento === "Cerrado") return el("span", { class: "muted" }, "Expediente cerrado el " + U.fmtDate(x.fechaCierre));
+      const etapa = Store.etapaExpediente(x);
+      let tipo = "evaluacion", label = "Evaluación técnica";
+      if (etapa === C.ETAPAS_CORR.EN_ST) { tipo = "retorno_st"; label = "Registrar retorno de S.T."; }
+      else if (etapa === C.ETAPAS_CORR.RETORNADO_OK) { tipo = "cierre"; label = "Cerrar expediente"; }
+      else if (etapa === C.ETAPAS_CORR.RETORNADO_NOK) { tipo = "evaluacion", label = "Re-evaluar"; }
+      else if (etapa === C.ETAPAS_CORR.COMPRA) { tipo = "oc_enviada"; label = "OC enviada al proveedor"; }
+      else if (etapa === C.ETAPAS_CORR.ESPERA) { tipo = "visita_ejecucion"; label = "Visita / Ejecución realizada"; }
+      else if (etapa === C.ETAPAS_CORR.EJECUCION) { tipo = "cierre"; label = "Cerrar expediente"; }
+      else { tipo = "cotizacion_solicitada"; label = "Solicitar cotización"; }
+      return el("div", {}, [
+        el("span", { class: "muted" }, "Siguiente paso sugerido: "),
+        UI.btn("▶ " + label + " (" + U.fmtDate(U.todayISO()) + ")", "primary sm",
+          () => MP.forms.registrarAvance(x.id, tipo, onChange)),
+      ]);
+    }
+
+    function detalleAvance(a) {
+      const d = a.datos || {};
+      const parts = [];
+      if (d.numero) parts.push("N° " + d.numero);
+      if (d.numeroEnvio) parts.push("Envío " + d.numeroEnvio);
+      if (d.folioRetorno) parts.push("Retorno " + d.folioRetorno);
+      if (d.empresa) parts.push(d.empresa);
+      if (d.estadoEquipo) parts.push("→ " + d.estadoEquipo);
+      if (d.quien) parts.push("(" + d.quien + ")");
+      if (d.nota) parts.push(d.nota);
+      if (d.descripcion) parts.push(d.descripcion);
+      return parts.join(" · ");
+    }
+
+    function timelineItem(titulo, fechaReal, fechaReg, fechaCorr, detalle, onDel) {
+      return el("div", { class: "tl-item" }, [
+        el("div", { class: "tl-dot" }),
+        el("div", { class: "tl-body" }, [
+          el("div", { class: "tl-title" }, [
+            el("b", {}, titulo), " ", el("span", { class: "tl-date" }, U.fmtDate(fechaReal)),
+            fechaCorr ? el("span", { class: "tl-corr" }, " (corregido " + U.fmtDate(fechaCorr) + ")") : null,
+            onDel ? el("button", { class: "icon-btn tl-del no-rowclick", title: "Eliminar avance", onclick: onDel }, "✕") : null,
+          ]),
+          detalle ? el("div", { class: "muted tl-det" }, detalle) : null,
+          fechaReg && fechaReg !== fechaReal ? el("div", { class: "tl-reg" }, "Registrado: " + U.fmtDate(fechaReg)) : null,
+        ]),
+      ]);
+    }
+
+    render();
+  };
+})(window);
+
+
+/* ===== assets/js/views/pendientes.js ===== */
+/* =========================================================================
+ * MP 2026 · pendientes.js  —  Paso 9: Bandeja de gestión de pendientes
+ * Tabla tipo Excel, métricas de cabecera, acciones rápidas por fila,
+ * filas expandibles con tareas, bitácora y caja de gestión.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+
+  const URGENCIA_ORDEN = { "Atrasado": 0, "Hoy": 1, "Esta semana": 2, "Próximo": 3, "En espera": 4, "Completado": 5 };
+
+  MP.views = MP.views || {};
+  MP.views.pendientes = function (container) {
+    const todos = Store.db.pendientes;
+
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Bandeja de Pendientes"),
+      el("p", { class: "view-sub" }, "Gestión de pendientes con urgencia, tareas y bitácora."),
+    ]));
+
+    // Métricas de cabecera
+    const abiertos = todos.filter((p) => !p.fechaCompletado);
+    const atrasados = abiertos.filter((p) => Store.urgenciaPendiente(p) === "Atrasado");
+    const enEspera = abiertos.filter((p) => p.enEspera);
+    const compSemana = todos.filter((p) => p.fechaCompletado && U.daysBetween(p.fechaCompletado, U.todayISO()) <= 7);
+    const completados = todos.filter((p) => p.fechaCompletado);
+    const tmedio = (() => {
+      const res = completados.map((p) => U.daysBetween(p.createdAt ? p.createdAt.slice(0, 10) : p.fechaCompromiso, p.fechaCompletado)).filter((d) => d !== null && d >= 0);
+      if (!res.length) return "—";
+      return Math.round(res.reduce((a, b) => a + b, 0) / res.length) + " d";
+    })();
+
+    container.appendChild(metricas([
+      ["Abiertos", abiertos.length, "neutral"],
+      ["Atrasados", atrasados.length, "bad"],
+      ["En espera", enEspera.length, "warn"],
+      ["Completados (semana)", compSemana.length, "ok"],
+      ["Tiempo medio resolución", tmedio, "neutral"],
+    ]));
+
+    const rows = todos.map((p) => {
+      const eq = Store.equipoByKey(p.equipoKey) || {};
+      const urg = Store.urgenciaPendiente(p);
+      return {
+        _p: p, _eq: eq,
+        equipo: eq.equipo || "(sin equipo)", serie: eq.serie || "", nInventario: eq.nInventario || "",
+        servicio: eq.servicio || "", tipo: p.tipo, urgencia: urg, estado: Store.estadoPendiente(p),
+        compromiso: p.fechaCompromiso, atraso: Store.diasAtraso(p),
+        tareas: (p.tareas || []).filter((t) => t.hecha).length + "/" + (p.tareas || []).length,
+        responsables: [p.responsableAdmin, p.responsableEjecutivo].filter(Boolean).join(" / "),
+        espera: p.enEspera ? p.enEspera.motivo : "",
+        ultimaGestion: (p.gestiones && p.gestiones.length) ? U.fmtDate(p.gestiones[p.gestiones.length - 1].fecha) : "",
+        completado: p.fechaCompletado || "",
+      };
+    });
+    // Orden por urgencia por defecto
+    rows.sort((a, b) => (URGENCIA_ORDEN[a.urgencia] - URGENCIA_ORDEN[b.urgencia]) || (a.atraso < b.atraso ? 1 : -1));
+
+    const cols = [
+      { key: "equipo", label: "Equipo" },
+      { key: "serie", label: "Serie" },
+      { key: "nInventario", label: "N° Inventario" },
+      { key: "servicio", label: "Servicio" },
+      { key: "tipo", label: "Tipo" },
+      { key: "urgencia", label: "Urgencia", render: (r) => chipUrg(r.urgencia), text: (r) => r.urgencia },
+      { key: "estado", label: "Estado gestión" },
+      { key: "compromiso", label: "Compromiso", render: (r) => el("span", {}, U.fmtDate(r.compromiso)), text: (r) => r.compromiso },
+      { key: "atraso", label: "Días atraso", align: "right", text: (r) => String(r.atraso) },
+      { key: "tareas", label: "Tareas", align: "center" },
+      { key: "responsables", label: "Responsables", defaultVisible: false },
+      { key: "espera", label: "En espera de", defaultVisible: false },
+      { key: "ultimaGestion", label: "Última gestión", defaultVisible: false },
+      { key: "completado", label: "Completado", defaultVisible: false, render: (r) => el("span", {}, r.completado ? U.fmtDate(r.completado) : "—"), text: (r) => r.completado },
+      { key: "_acc", label: "Acciones", filterable: false, sortable: false, render: (r) => accionesRapidas(r._p) },
+    ];
+
+    const toolbarExtra = [UI.btn("+ Nuevo pendiente", "primary sm", () => MP.forms.pendiente(null, () => MP.app.render()))];
+
+    const dt = UI.DataTable({
+      columns: cols, rows, storageKey: "pendientes", exportName: "Pendientes_MP2026",
+      toolbarExtra,
+      rowClass: (r) => "urg-row-" + U.norm(r.urgencia).replace(/\s/g, "-"),
+      onRowClick: (r) => toggleExpand(r._p, dt),
+      emptyText: "No hay pendientes registrados.",
+    });
+    container.appendChild(dt.root);
+
+    function accionesRapidas(p) {
+      const wrap = el("div", { class: "row-actions no-rowclick" });
+      if (!p.fechaCompletado) {
+        wrap.appendChild(UI.btn("✓", "icon-btn", () => {
+          const abiertas = (p.tareas || []).filter((t) => !t.hecha).length;
+          if (abiertas > 0) UI.confirm("Quedan <b>" + abiertas + "</b> tarea(s) sin marcar. ¿Completar de todos modos?", () => { Store.completarPendiente(p.id); MP.app.render(); });
+          else { Store.completarPendiente(p.id); MP.app.render(); }
+        }, { title: "Completar" }));
+        wrap.appendChild(UI.btn("+1", "icon-btn", () => { Store.posponerPendiente(p.id, 1); MP.app.render(); }, { title: "Posponer 1 día" }));
+        wrap.appendChild(UI.btn("+3", "icon-btn", () => { Store.posponerPendiente(p.id, 3); MP.app.render(); }, { title: "Posponer 3 días" }));
+        wrap.appendChild(UI.btn("+7", "icon-btn", () => { Store.posponerPendiente(p.id, 7); MP.app.render(); }, { title: "Posponer 7 días" }));
+        if (p.enEspera) wrap.appendChild(UI.btn("▶", "icon-btn", () => { Store.reanudarPendiente(p.id); MP.app.render(); }, { title: "Reanudar" }));
+        else wrap.appendChild(UI.btn("⏸", "icon-btn", () => {
+          promptMotivo((motivo) => { Store.marcarEnEspera(p.id, motivo); MP.app.render(); });
+        }, { title: "Marcar en espera" }));
+      }
+      return wrap;
+    }
+
+    function toggleExpand(p, dt) {
+      // Abre un modal de gestión en línea (equivalente a desplegar la fila).
+      const eq = Store.equipoByKey(p.equipoKey) || {};
+      const body = el("div", { class: "pend-expand" });
+      const mm = UI.modal({ title: "Pendiente · " + (eq.equipo || "") + " · " + p.tipo, size: "lg", body });
+
+      function renderExp() {
+        body.innerHTML = "";
+        body.appendChild(el("div", { class: "muted" }, "Compromiso: " + U.fmtDate(p.fechaCompromiso) +
+          " · " + Store.estadoPendiente(p) + " · " + Store.urgenciaPendiente(p) +
+          (p.enEspera ? " · En espera: " + p.enEspera.motivo : "")));
+        if (p.descripcion) body.appendChild(el("p", {}, p.descripcion));
+
+        // Tareas marcables
+        body.appendChild(el("h4", { class: "sec-title" }, "Tareas"));
+        const tl = el("div", { class: "tareas-list" });
+        (p.tareas || []).forEach((t) => {
+          const cb = el("input", { type: "checkbox" }); cb.checked = !!t.hecha;
+          cb.addEventListener("change", () => {
+            t.hecha = cb.checked; Store.commit();
+            if (cb.checked && (p.tareas || []).every((x) => x.hecha) && !p.fechaCompletado) {
+              UI.confirm("Todas las tareas están marcadas. ¿Completar el pendiente?", () => { Store.completarPendiente(p.id); mm.close(); MP.app.render(); });
+            }
+          });
+          tl.appendChild(el("div", { class: "tarea-row" }, [cb, el("span", { class: "tarea-txt" + (t.hecha ? " done" : "") }, t.texto)]));
+        });
+        if ((p.tareas || []).length === 0) tl.appendChild(el("p", { class: "muted" }, "Sin tareas."));
+        body.appendChild(tl);
+
+        // Bitácora de gestión
+        body.appendChild(el("h4", { class: "sec-title" }, "Bitácora de gestión"));
+        const bit = el("div", { class: "bitacora" });
+        (p.gestiones || []).slice().reverse().forEach((g) =>
+          bit.appendChild(el("div", { class: "bit-item" }, [el("span", { class: "bit-date" }, U.fmtDate(g.fecha)), " " + g.texto])));
+        if ((p.gestiones || []).length === 0) bit.appendChild(el("p", { class: "muted" }, "Sin gestiones."));
+        body.appendChild(bit);
+
+        // Caja de gestión
+        const ta = el("textarea", { class: "ctrl", rows: 2, placeholder: "Registrar una gestión…" });
+        body.appendChild(el("div", { class: "gestion-box" }, [ta,
+          UI.btn("Registrar", "secondary sm", () => { if (ta.value.trim()) { Store.agregarGestion(p.id, ta.value.trim()); ta.value = ""; renderExp(); MP.app.render(); } })]));
+
+        // Footer acciones
+        body.appendChild(el("div", { class: "modal-foot inline" }, [
+          UI.btn("Editar pendiente", "ghost", () => { mm.close(); MP.forms.pendiente(p.equipoKey, () => MP.app.render(), p); }),
+          !p.fechaCompletado ? UI.btn("✓ Completar", "primary", () => {
+            const abiertas = (p.tareas || []).filter((t) => !t.hecha).length;
+            const done = () => { Store.completarPendiente(p.id); mm.close(); MP.app.render(); };
+            if (abiertas > 0) UI.confirm("Quedan <b>" + abiertas + "</b> tarea(s) sin marcar. ¿Completar igual?", done);
+            else done();
+          }) : null,
+          UI.btn("Eliminar", "danger ghost", () => UI.confirm("¿Eliminar este pendiente?", () => { Store.eliminarPendiente(p.id); mm.close(); MP.app.render(); }, { danger: true, okText: "Eliminar" })),
+        ]));
+      }
+      renderExp();
+    }
+
+    function promptMotivo(cb) {
+      const ta = el("textarea", { class: "ctrl", rows: 2, placeholder: "Motivo de la espera (de quién/qué se espera)…" });
+      const mm = UI.modal({ title: "Marcar en espera", size: "sm", body: ta, footer: [
+        UI.btn("Cancelar", "ghost", () => mm.close()),
+        UI.btn("Confirmar", "primary", () => { mm.close(); cb(ta.value.trim() || "Sin especificar"); }),
+      ] });
+    }
+  };
+
+  function chipUrg(urg) {
+    const cls = urg === "Atrasado" ? "bad" : urg === "Hoy" ? "warn" : urg === "Completado" ? "ok" : urg === "En espera" ? "neutral" : "info";
+    return el("span", { class: "chip " + cls }, urg);
+  }
+
+  function metricas(items) {
+    return el("div", { class: "metrics" }, items.map(([label, val, cls]) =>
+      el("div", { class: "metric metric-" + cls }, [
+        el("div", { class: "metric-val" }, String(val)),
+        el("div", { class: "metric-label" }, label),
+      ])));
+  }
+  MP.views._metricas = metricas;
+})(window);
+
+
+/* ===== assets/js/views/operatividad.js ===== */
+/* =========================================================================
+ * MP 2026 · operatividad.js  —  Paso 12: Tablero de Operatividad
+ * Lista permanente de equipos que requieren atención, con último estado,
+ * última gestión, días transcurridos y "registro en un clic".
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+
+  MP.views = MP.views || {};
+  MP.views.operatividad = function (container) {
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Tablero de Operatividad"),
+      el("p", { class: "view-sub" }, "El último estado vale más que el detalle: equipos que requieren atención, ordenados por criticidad."),
+    ]));
+
+    const items = [];
+    Store.equipos().forEach((eq) => {
+      const key = U.equipoKey(eq);
+      const est = Store.estadoEquipo(key);
+      const exps = Store.expedientesDe(key);
+      const expAbierto = exps.find((x) => x.estadoEvento !== "Cerrado");
+      // Marcado FS/NU en planilla sin resolución posterior
+      const eventos = Store.eventosEstado(key);
+      const ultimo = eventos[eventos.length - 1];
+      const fsNuPlanilla = ultimo && ultimo.origen === "Planilla" &&
+        (ultimo.detalle.indexOf("Fuera de Servicio") >= 0 || ultimo.detalle.indexOf("No Ubicable") >= 0);
+
+      const requiere = est.estado === C.ESTADO.NO_OPERATIVO ||
+        est.estado === C.ESTADO.SERVICIO_TECNICO || !!expAbierto || fsNuPlanilla;
+      if (!requiere) return;
+
+      // Criticidad
+      let crit = 3;
+      if (est.estado === C.ESTADO.NO_OPERATIVO) crit = 1;
+      else if (est.estado === C.ESTADO.SERVICIO_TECNICO) crit = 2;
+      if (eq.clasificacion && /crítico/i.test(eq.clasificacion)) crit -= 0.5;
+
+      items.push({
+        eq, key, est, expAbierto, fsNuPlanilla, crit,
+        ultimaGestion: ultimaGestionDe(key),
+      });
+    });
+
+    items.sort((a, b) => (a.crit - b.crit) || ((b.est.dias || 0) - (a.est.dias || 0)));
+
+    // Métricas
+    container.appendChild(MP.views._metricas([
+      ["Requieren atención", items.length, "neutral"],
+      ["No Operativos", items.filter((i) => i.est.estado === C.ESTADO.NO_OPERATIVO).length, "bad"],
+      ["En Servicio Técnico", items.filter((i) => i.est.estado === C.ESTADO.SERVICIO_TECNICO).length, "warn"],
+      ["Expedientes abiertos", items.filter((i) => i.expAbierto).length, "info"],
+    ]));
+
+    if (items.length === 0) {
+      container.appendChild(el("div", { class: "empty-state" }, [
+        el("div", { class: "empty-ico" }, "✅"),
+        el("h2", {}, "Todo operativo"),
+        el("p", {}, "Ningún equipo requiere atención en este momento."),
+      ]));
+      return;
+    }
+
+    const list = el("div", { class: "oper-list" });
+    items.forEach((it) => list.appendChild(card(it)));
+    container.appendChild(list);
+
+    function card(it) {
+      const eq = it.eq;
+      const c = el("div", { class: "oper-card crit-" + Math.ceil(it.crit) });
+      c.appendChild(el("div", { class: "oper-main" }, [
+        el("div", { class: "oper-title" }, [
+          MP.views._chipEstado(it.est.estado),
+          el("b", {}, " " + eq.equipo),
+          el("span", { class: "muted" }, " · " + eq.servicio + " · " + (eq.serie || eq.nInventario)),
+        ]),
+        el("div", { class: "oper-sub muted" }, [
+          it.est.dias !== null ? (it.est.dias + " días en estado") : "",
+          it.expAbierto ? " · Folio " + it.expAbierto.folioSigem + " (" + Store.etapaExpediente(it.expAbierto) + ")" : "",
+          it.fsNuPlanilla ? " · marcado en planilla sin resolución" : "",
+          it.ultimaGestion ? " · Última gestión: " + it.ultimaGestion : "",
+        ].filter(Boolean).join("")),
+      ]));
+      const acc = el("div", { class: "oper-actions" });
+      // Registro en un clic
+      if (it.expAbierto) {
+        const x = it.expAbierto;
+        const etapa = Store.etapaExpediente(x);
+        let tipo = "evaluacion", label = "Registrar evaluación";
+        if (etapa === C.ETAPAS_CORR.EN_ST) { tipo = "retorno_st"; label = "Registrar retorno"; }
+        else if (etapa === C.ETAPAS_CORR.RETORNADO_OK || etapa === C.ETAPAS_CORR.EJECUCION) { tipo = "cierre"; label = "Cerrar"; }
+        else if (etapa === C.ETAPAS_CORR.ESPERA) { tipo = "visita_ejecucion"; label = "Visita / Ejecución"; }
+        acc.appendChild(UI.btn("▶ " + label, "primary sm", () => MP.forms.registrarAvance(x.id, tipo, () => MP.app.render())));
+      } else {
+        acc.appendChild(UI.btn("🔧 Abrir correctivo", "secondary sm", () => MP.forms.correctivo(it.key, () => MP.app.render())));
+      }
+      acc.appendChild(UI.btn("Ver ficha", "ghost sm", () => MP.views.detalle(it.key)));
+      c.appendChild(acc);
+      return c;
+    }
+
+    function ultimaGestionDe(key) {
+      const upd = Store.ultimaActualizacion(key);
+      return upd ? U.fmtDate(upd) : "";
+    }
+  };
+})(window);
+
+
+/* ===== assets/js/views/plan.js ===== */
+/* =========================================================================
+ * MP 2026 · plan.js  —  Paso 13: Vista Plan de Mantenimiento
+ * Una fila por evento de mantención (equipo y mes) uniendo programación
+ * PMP, registro de la planilla y mantenciones de la app.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const C = MP.const;
+  const el = U.el;
+  const Store = MP.store;
+
+  MP.views = MP.views || {};
+  MP.views.plan = function (container) {
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Plan de Mantenimiento"),
+      el("p", { class: "view-sub" }, "Una fila por equipo y mes, uniendo programación PMP, registro de planilla y app."),
+    ]));
+
+    const rows = [];
+    Store.equipos().forEach((eq) => {
+      const key = U.equipoKey(eq);
+      const mant = Store.mantencionesDe(key);
+      C.MESES.forEach((mes) => {
+        const prog = (eq.programacion && eq.programacion[mes.key]) || "";
+        const reg = (eq.registro && eq.registro[mes.key]) || {};
+        const mApp = mant.filter((m) => U.mesKeyFromISO(m.fecha) === mes.key);
+        if (!prog && !reg.programa && !reg.resultado && mApp.length === 0) return;
+
+        // Programa: prevalece planilla; si no, programación PMP; si no, de la app
+        const programa = reg.programa || prog || (mApp[0] && mApp[0].programacion) || "";
+        // Resultado: prevalece planilla (Paso 4); si no, app
+        const resultado = reg.resultado || (mApp[0] && mApp[0].resultado) || "";
+        const fechaApp = mApp.length ? mApp.map((m) => m.fecha).sort().slice(-1)[0] : "";
+        const registroTipo = mApp.length ? mApp[0].tipoRegistro : (reg.resultado ? "Oficial" : "");
+        let origen = "";
+        if ((reg.programa || reg.resultado) && mApp.length) origen = "Planilla + App";
+        else if (reg.programa || reg.resultado || prog) origen = "Planilla";
+        else if (mApp.length) origen = "App";
+
+        rows.push({
+          _key: key,
+          id: eq.id, nCarpeta: eq.nCarpeta, nInventario: eq.nInventario, equipo: eq.equipo,
+          servicio: eq.servicio, unidad: eq.unidad, ubicacion: eq.ubicacion, procedencia: eq.procedencia,
+          marca: eq.marca, modelo: eq.modelo, serie: eq.serie,
+          mes: mes.nombre, _mesNum: mes.num, programa, resultado,
+          fechaEjecucion: fechaApp, registro: registroTipo, origen,
+        });
+      });
+    });
+    rows.sort((a, b) => a.equipo.localeCompare(b.equipo) || (a._mesNum - b._mesNum));
+
+    const cols = [
+      { key: "id", label: "ID", align: "right", defaultVisible: false },
+      { key: "nCarpeta", label: "N° Carpeta", defaultVisible: false },
+      { key: "nInventario", label: "N° Inventario" },
+      { key: "equipo", label: "Equipo" },
+      { key: "servicio", label: "Servicio" },
+      { key: "unidad", label: "Unidad", defaultVisible: false },
+      { key: "ubicacion", label: "Ubicación", defaultVisible: false },
+      { key: "procedencia", label: "Procedencia", defaultVisible: false },
+      { key: "marca", label: "Marca", defaultVisible: false },
+      { key: "modelo", label: "Modelo", defaultVisible: false },
+      { key: "serie", label: "Serie" },
+      { key: "mes", label: "Mes" },
+      { key: "programa", label: "Programa", align: "center", render: (r) => r.programa ? el("span", { class: "code-pill" }, r.programa) : el("span", { class: "muted" }, "—"), text: (r) => r.programa },
+      { key: "resultado", label: "Resultado", align: "center", render: (r) => r.resultado ? el("span", { class: "code-pill res" }, r.resultado) : el("span", { class: "muted" }, "—"), text: (r) => r.resultado },
+      { key: "fechaEjecucion", label: "Fecha ejec. (app)", render: (r) => el("span", {}, r.fechaEjecucion ? U.fmtDate(r.fechaEjecucion) : "—"), text: (r) => r.fechaEjecucion },
+      { key: "registro", label: "Registro", align: "center", render: (r) => r.registro ? el("span", { class: "tag " + (r.registro === "Borrador" ? "tag-draft" : "tag-official") }, r.registro) : el("span", { class: "muted" }, "—"), text: (r) => r.registro },
+      { key: "origen", label: "Origen" },
+    ];
+
+    const dt = MP.ui.DataTable({
+      columns: cols, rows, storageKey: "plan", exportName: "PlanMantenimiento_MP2026",
+      onRowClick: (r) => MP.views.detalle(r._key),
+      emptyText: "Sin eventos de mantención. Cargue la planilla o registre mantenciones.",
+    });
+    container.appendChild(dt.root);
+  };
+})(window);
+
+
+/* ===== assets/js/views/correctivo.js ===== */
+/* =========================================================================
+ * MP 2026 · correctivo.js  —  Paso 15: Vista global de Mantenimiento Correctivo
+ * Una fila por expediente (folio SIGEM), uniendo la OT con sus avances.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const Store = MP.store;
+
+  MP.views = MP.views || {};
+  MP.views.correctivo = function (container) {
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Mantenimiento Correctivo"),
+      el("p", { class: "view-sub" }, "Una fila por expediente (folio SIGEM). Clic para abrir la ficha del equipo."),
+    ]));
+
+    const exps = Store.db.expedientes;
+    const detenidos = exps.filter((x) => x.estadoEvento !== "Cerrado" && x.estadoEquipo === "No Operativo");
+    const abiertos = exps.filter((x) => x.estadoEvento !== "Cerrado");
+    const cerrados = exps.filter((x) => x.estadoEvento === "Cerrado");
+    const cicloMedio = (() => {
+      const c = cerrados.map((x) => Store.diasCicloExpediente(x)).filter((d) => d !== null);
+      return c.length ? Math.round(c.reduce((a, b) => a + b, 0) / c.length) + " d" : "—";
+    })();
+
+    container.appendChild(MP.views._metricas([
+      ["Expedientes", exps.length, "neutral"],
+      ["Abiertos", abiertos.length, "warn"],
+      ["Equipo detenido", detenidos.length, "bad"],
+      ["Cerrados", cerrados.length, "ok"],
+      ["Ciclo medio", cicloMedio, "info"],
+    ]));
+
+    let idc = 0;
+    const rows = exps.map((x) => {
+      const eq = Store.equipoByKey(x.equipoKey) || {};
+      const ultEmpresa = (() => {
+        const envio = (x.avances || []).slice().reverse().find((a) => a.datos && a.datos.empresa);
+        if (envio) return envio.datos.empresa;
+        if (x.ordenCompra) return (x.informeTecnico && x.informeTecnico.empresa) || "";
+        return (x.informeTecnico && x.informeTecnico.empresa) || "";
+      })();
+      return {
+        _x: x, _key: x.equipoKey, _serie: eq.serie || "", _inv: eq.nInventario || "",
+        idc: ++idc, equipo: eq.equipo || "(sin equipo)", tipo: x.tipoEvento, folio: x.folioSigem,
+        fechaDoc: x.fechaDocumento, tecnico: x.tecnico, empresa: ultEmpresa,
+        estado: x.estadoEvento === "Cerrado" ? "Cerrado" : Store.etapaExpediente(x),
+        dias: Store.diasCicloExpediente(x),
+        _abierto: x.estadoEvento !== "Cerrado",
+      };
+    });
+    rows.sort((a, b) => (Number(b._abierto) - Number(a._abierto)) || (b.dias - a.dias));
+
+    const cols = [
+      { key: "idc", label: "ID", align: "right" },
+      { key: "equipo", label: "Equipo" },
+      { key: "tipo", label: "Tipo" },
+      { key: "folio", label: "Folio SIGEM" },
+      { key: "fechaDoc", label: "Fecha documento", render: (r) => el("span", {}, U.fmtDate(r.fechaDoc)), text: (r) => r.fechaDoc },
+      { key: "tecnico", label: "Técnico" },
+      { key: "empresa", label: "Empresa" },
+      { key: "estado", label: "Estado / Etapa", render: (r) => el("span", { class: "chip " + (r._abierto ? "warn" : "ok") }, r.estado), text: (r) => r.estado },
+      { key: "dias", label: "Días ciclo", align: "right", text: (r) => String(r.dias) },
+      // columnas ocultas para búsqueda global por serie / inventario
+      { key: "_serie", label: "Serie", defaultVisible: false },
+      { key: "_inv", label: "N° Inventario", defaultVisible: false },
+    ];
+
+    const dt = MP.ui.DataTable({
+      columns: cols, rows, storageKey: "correctivo", exportName: "Correctivo_MP2026",
+      onRowClick: (r) => MP.views.detalle(r._key),
+      rowClass: (r) => r._x.estadoEquipo === "No Operativo" && r._abierto ? "row-bad" : "",
+      emptyText: "Sin expedientes correctivos.",
+    });
+    container.appendChild(dt.root);
+  };
+})(window);
+
+
+/* ===== assets/js/views/datos.js ===== */
+/* =========================================================================
+ * MP 2026 · datos.js  —  Pasos 1 y 11
+ * Importar planilla (PMP_2026 / Registro_MP-2026), descargar registros,
+ * respaldo (backup) y restauración, datos de demostración.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+
+  MP.views = MP.views || {};
+  MP.views.datos = function (container) {
+    container.appendChild(el("div", { class: "view-head" }, [
+      el("h2", {}, "Datos y Respaldo"),
+      el("p", { class: "view-sub" }, "Cargar la base de equipos, exportar registros y gestionar respaldos."),
+    ]));
+
+    const meta = Store.db.meta || {};
+    const resumen = el("div", { class: "data-summary" }, [
+      stat("Equipos", Store.db.equipos.length),
+      stat("Mantenciones (app)", Store.db.mantenciones.length),
+      stat("Pendientes", Store.db.pendientes.length),
+      stat("Expedientes correctivos", Store.db.expedientes.length),
+      stat("Última carga", meta.ultimaCarga ? U.fmtDate(meta.ultimaCarga) : "—"),
+    ]);
+    container.appendChild(resumen);
+
+    const grid = el("div", { class: "cards-grid" });
+
+    /* --- Importar planilla (Paso 1, 3, 4) --- */
+    grid.appendChild(card("📥", "Cargar planilla de equipos",
+      "Importa la base desde el archivo ProgramaciónMP2026 (hojas PMP_2026 y Registro_MP-2026). Encabezados en la fila 7, datos desde la fila 8. Serie y N° Inventario se conservan como texto.",
+      [(() => {
+        const inp = el("input", { type: "file", accept: ".xlsx,.xls", class: "hidden" });
+        inp.addEventListener("change", () => {
+          const f = inp.files[0]; if (!f) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const res = MP.excel.importarPlanilla(reader.result);
+              UI.toast("Cargados " + res.equipos + " equipos" + (res.conRegistro ? " y " + res.registros + " registros." : "."), "ok");
+              MP.app.go("equipos");
+            } catch (e) { UI.toast("Error: " + e.message, "warn"); console.error(e); }
+          };
+          reader.readAsArrayBuffer(f);
+          inp.value = "";
+        });
+        const btn = UI.btn("Seleccionar archivo .xlsx", "primary", () => {
+          if (!MP.excel.disponible()) { UI.toast("SheetJS no disponible (sin conexión). Use respaldo JSON.", "warn"); return; }
+          inp.click();
+        });
+        return el("div", {}, [btn, inp]);
+      })()]));
+
+    /* --- Datos de demostración --- */
+    grid.appendChild(card("🧪", "Datos de demostración",
+      "Carga un conjunto de equipos y registros de ejemplo que simulan escenarios reales (operativos, no operativos, en servicio técnico, pendientes atrasados y un expediente correctivo).",
+      [UI.btn("Cargar demo", "secondary", () => {
+        UI.confirm("Esto reemplazará los datos actuales por el conjunto de demostración. ¿Continuar?", () => {
+          MP.seed(); UI.toast("Datos de demostración cargados.", "ok"); MP.app.go("equipos");
+        });
+      })]));
+
+    /* --- Descargar todos los registros (Paso 11) --- */
+    grid.appendChild(card("⬇️", "Descargar todos los registros",
+      "Exporta equipos, mantenciones, pendientes y correctivo a un archivo Excel, conservando Serie y N° Inventario como texto con sus ceros a la izquierda.",
+      [UI.btn("Descargar Excel", "secondary", () => MP.excel.descargarTodo())]));
+
+    /* --- Backup (Paso 11) --- */
+    grid.appendChild(card("💾", "Respaldo (backup)",
+      "Genera un respaldo completo de los datos de la aplicación en formato JSON. Al restaurar, el respaldo <b>reemplaza por completo</b> los datos actuales (no es necesario borrar antes).",
+      [
+        UI.btn("Generar respaldo", "secondary", () => {
+          const blob = new Blob([Store.exportBackup()], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = el("a", { href: url, download: "backup_MP2026_" + U.todayISO() + ".json" });
+          document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+          UI.toast("Respaldo generado.", "ok");
+        }),
+        (() => {
+          const inp = el("input", { type: "file", accept: ".json", class: "hidden" });
+          inp.addEventListener("change", () => {
+            const f = inp.files[0]; if (!f) return;
+            const r = new FileReader();
+            r.onload = () => {
+              UI.confirm("Restaurar reemplazará todos los datos actuales. ¿Continuar?", () => {
+                try { Store.importBackup(r.result); UI.toast("Respaldo restaurado.", "ok"); MP.app.go("equipos"); }
+                catch (e) { UI.toast("Respaldo inválido: " + e.message, "warn"); }
+              });
+            };
+            r.readAsText(f); inp.value = "";
+          });
+          const btn = UI.btn("Restaurar (reemplaza todo)", "ghost", () => inp.click());
+          return el("div", {}, [btn, inp]);
+        })(),
+      ]));
+
+    /* --- Borrar todo --- */
+    grid.appendChild(card("🗑️", "Reiniciar datos",
+      "Elimina todos los datos almacenados en este navegador. Esta acción no se puede deshacer.",
+      [UI.btn("Borrar todo", "danger ghost", () => {
+        UI.confirm("¿Borrar <b>todos</b> los datos de la aplicación?", () => { Store.reset(); UI.toast("Datos borrados.", "ok"); MP.app.render(); }, { danger: true, okText: "Borrar todo" });
+      })]));
+
+    container.appendChild(grid);
+
+    function stat(label, val) {
+      return el("div", { class: "data-stat" }, [el("b", {}, String(val)), el("span", {}, label)]);
+    }
+    function card(ico, titulo, desc, acciones) {
+      return el("div", { class: "data-card" }, [
+        el("div", { class: "data-card-ico" }, ico),
+        el("h3", {}, titulo),
+        el("p", { class: "muted", html: desc }),
+        el("div", { class: "data-card-actions" }, acciones),
+      ]);
+    }
+  };
+})(window);
+
+
+/* ===== assets/js/app.js ===== */
+/* =========================================================================
+ * MP 2026 · app.js  —  Enrutador, navegación e inicialización.
+ * ========================================================================= */
+(function (global) {
+  "use strict";
+  const MP = global.MP;
+  const U = MP.util;
+  const el = U.el;
+  const Store = MP.store;
+  const UI = MP.ui;
+
+  const App = MP.app = {};
+  App.vistaActual = "equipos";
+
+  const NAV = [
+    { id: "equipos", label: "Equipos", ico: "📊" },
+    { id: "plan", label: "Plan de Mantenimiento", ico: "🗓️" },
+    { id: "pendientes", label: "Pendientes", ico: "📋" },
+    { id: "operatividad", label: "Operatividad", ico: "🚨" },
+    { id: "correctivo", label: "Correctivo", ico: "🔧" },
+    { id: "datos", label: "Datos", ico: "⚙️" },
+  ];
+
+  App.go = function (id) {
+    App.vistaActual = id;
+    if (MP.grabacion.activa()) MP.grabacion.notarVista(id);
+    if (location.hash !== "#" + id) location.hash = id;
+    App.render();
+  };
+
+  App.render = function () {
+    // Nav activo
+    document.querySelectorAll(".nav-item").forEach((n) =>
+      n.classList.toggle("active", n.dataset.id === App.vistaActual));
+    // Badge de pendientes
+    const abiertos = Store.db.pendientes.filter((p) => !p.fechaCompletado).length;
+    const badge = document.getElementById("pend-badge");
+    if (badge) { badge.textContent = abiertos; badge.style.display = abiertos ? "" : "none"; }
+
+    const main = document.getElementById("view");
+    main.innerHTML = "";
+    const fn = MP.views[App.vistaActual];
+    if (fn) {
+      try { fn(main); }
+      catch (e) { console.error(e); main.appendChild(el("div", { class: "error-box" }, "Error al renderizar: " + e.message)); }
+    }
+  };
+
+  function buildShell() {
+    const app = document.getElementById("app");
+
+    // Barra superior
+    const grabBtn = el("button", { id: "grab-btn", class: "topbar-btn", title: "Grabar sesión (Paso 14)" }, [
+      el("span", { class: "rec-dot" }), el("span", { id: "grab-label" }, "Grabar"),
+    ]);
+    grabBtn.addEventListener("click", () => {
+      MP.grabacion.toggle();
+      const on = MP.grabacion.activa();
+      grabBtn.classList.toggle("recording", on);
+      document.getElementById("grab-label").textContent = on ? "Detener" : "Grabar";
+    });
+
+    const topbar = el("header", { class: "topbar" }, [
+      el("div", { class: "brand" }, [
+        el("span", { class: "brand-logo" }, "✚"),
+        el("div", {}, [
+          el("div", { class: "brand-title" }, "Gestión MP 2026"),
+          el("div", { class: "brand-sub" }, "Mantenciones Preventivas de Equipos"),
+        ]),
+      ]),
+      el("div", { class: "topbar-actions" }, [
+        grabBtn,
+        el("button", { class: "topbar-btn", title: "Descargar registros", onclick: () => MP.excel.descargarTodo() }, "⬇ Exportar"),
+        el("button", { class: "topbar-btn", title: "Respaldo y datos", onclick: () => App.go("datos") }, "⚙ Datos"),
+      ]),
+    ]);
+
+    // Navegación lateral
+    const nav = el("nav", { class: "sidebar" }, NAV.map((n) => {
+      const item = el("a", { class: "nav-item", "data-id": n.id, href: "#" + n.id }, [
+        el("span", { class: "nav-ico" }, n.ico),
+        el("span", { class: "nav-label" }, n.label),
+        n.id === "pendientes" ? el("span", { id: "pend-badge", class: "nav-badge" }, "0") : null,
+      ]);
+      item.addEventListener("click", (e) => { e.preventDefault(); App.go(n.id); });
+      return item;
+    }));
+
+    const main = el("main", { class: "main" }, el("div", { id: "view", class: "view" }));
+
+    app.appendChild(topbar);
+    app.appendChild(el("div", { class: "layout" }, [nav, main]));
+  }
+
+  App.init = function () {
+    buildShell();
+    const cargado = Store.load();
+    if (!cargado || Store.db.equipos.length === 0) {
+      // Primera vez: cargar demo para que el usuario vea el sistema funcionando.
+      MP.seed();
+    }
+    // Aviso de pendientes atrasados al abrir (Paso 9).
+    const atrasados = Store.db.pendientes.filter((p) => !p.fechaCompletado && MP.store.urgenciaPendiente(p) === "Atrasado");
+    if (atrasados.length) setTimeout(() => UI.toast("⚠️ Tiene " + atrasados.length + " pendiente(s) atrasado(s).", "warn"), 800);
+
+    Store.onChange(() => App.render());
+
+    const hash = (location.hash || "").replace("#", "");
+    App.vistaActual = NAV.some((n) => n.id === hash) ? hash : "equipos";
+    window.addEventListener("hashchange", () => {
+      const h = (location.hash || "").replace("#", "");
+      if (NAV.some((n) => n.id === h) && h !== App.vistaActual) { App.vistaActual = h; App.render(); }
+    });
+
+    App.render();
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", App.init);
+  else App.init();
+
+})(window);
+
+</script></body></html>
